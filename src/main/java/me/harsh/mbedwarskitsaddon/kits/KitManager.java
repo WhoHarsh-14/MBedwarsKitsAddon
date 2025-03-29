@@ -1,7 +1,6 @@
 package me.harsh.mbedwarskitsaddon.kits;
 
 import de.marcely.bedwars.api.BedwarsAPI;
-import de.marcely.bedwars.tools.Helper;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 @Getter
@@ -43,16 +41,22 @@ public class KitManager {
           continue;
 
         // Loading Items.
-        final Set<ItemStack> itemStacks = new HashSet<>();
+        final Map<Integer, ItemStack> itemStacks = new HashMap<>();
+        final Set<ItemStack> armours = new HashSet<>();
         // kits.<id>.Items.item1/item2/....
         playerProperties.getStoredKeys()
             .stream()
             .filter(s -> s.contains("items"))
             .filter(s -> s.contains(id))
-            .forEach(s -> itemStacks.add(playerProperties.getItemStack(s).orElse(null)));
+            .forEach(s -> itemStacks.put(playerProperties.getInt(s + ".index").orElse(-1), playerProperties.getItemStack(s).orElse(null)));
+        playerProperties.getStoredKeys()
+            .stream()
+            .filter(s -> s.contains("armour"))
+            .filter(s -> s.contains(id))
+            .forEach(s -> armours.add(playerProperties.getItemStack(s).orElse(null)));
 
         // finally load it into the map
-        loadedKits.put(id, new Kit(id, name, icon, itemStacks));
+        loadedKits.put(id, new Kit(id, name, icon, itemStacks, armours));
       }
 
     });
@@ -83,7 +87,12 @@ public class KitManager {
         // Saves the new kit.
         playerProperties.set(path + "name", value.getName());
         playerProperties.set(path + "icon", value.getIcon());
-        value.getItems().forEach(itemStack -> playerProperties.set(path + "items." + itemStack.getItemMeta().getDisplayName(), itemStack));
+        value.getItems().forEach((integer, itemStack) -> {
+          playerProperties.set(path + "items." + itemStack.getItemMeta().getDisplayName(), itemStack);
+          playerProperties.set(path + "items." + itemStack.getItemMeta().getDisplayName() + ".index", integer);
+        });
+//        value.getItems().forEach(itemStack -> playerProperties.set(path + "items." + itemStack.getItemMeta().getDisplayName(), itemStack));
+        value.getArmour().forEach(itemStack -> playerProperties.set(path + "armour." + itemStack.getItemMeta().getDisplayName(), itemStack));
 
 
       }
@@ -101,7 +110,12 @@ public class KitManager {
     BedwarsAPI.getPlayerDataAPI().getProperties(new UUID(0, 0), playerProperties -> {
       playerProperties.remove(path + "name");
       playerProperties.remove(path + "icon");
-      kit.getItems().forEach(itemStack -> playerProperties.remove(path + "items." + itemStack.getItemMeta().getDisplayName()));
+      kit.getItems().forEach((integer, itemStack) -> {
+        playerProperties.remove(path + "items." + itemStack.getItemMeta().getDisplayName());
+        playerProperties.remove(path + "items." + itemStack.getItemMeta().getDisplayName() + ".index");
+      });
+//      kit.getItems().forEach(itemStack -> playerProperties.remove(path + "items." + itemStack.getItemMeta().getDisplayName()));
+      kit.getArmour().forEach(itemStack -> playerProperties.remove(path + "armour." + itemStack.getItemMeta().getDisplayName()));
     });
   }
 

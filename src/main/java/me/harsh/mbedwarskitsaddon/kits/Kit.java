@@ -1,5 +1,6 @@
 package me.harsh.mbedwarskitsaddon.kits;
 
+import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,17 +14,23 @@ public class Kit {
   private final String id;
   private String name;
   private ItemStack icon;
-  private Set<ItemStack> items;
+  private Map<Integer, ItemStack> items;
+  // Armour in extra set because kits can be edited. Makes easier to track them this way.
+  private Set<ItemStack> armour;
 
-  public Kit(String id, String name, ItemStack icon, Set<ItemStack> items){
+  public Kit(String id, String name, ItemStack icon, Map<Integer,ItemStack> items, Set<ItemStack> armour){
     this.id = id;
     this.items = items;
     this.icon = icon;
     this.name = name;
+    this.armour = armour;
   }
 
-  public void addItem(ItemStack itemStack){
-    this.items.add(itemStack);
+  public void addItem(int index, ItemStack itemStack){
+    this.items.put(index, itemStack);
+  }
+  public void addArmour(ItemStack armour){
+    this.armour.add(armour);
   }
 
   @Override
