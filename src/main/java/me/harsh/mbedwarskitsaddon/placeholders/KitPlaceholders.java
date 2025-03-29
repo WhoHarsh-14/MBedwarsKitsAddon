@@ -1,5 +1,6 @@
 package me.harsh.mbedwarskitsaddon.placeholders;
 
+import de.marcely.bedwars.api.player.PlayerDataAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public class KitPlaceholders extends PlaceholderExpansion {
   @Override
   public @NotNull String getIdentifier() {
-    return "mbw_kit";
+    return "mbw-kit";
   }
 
   @Override
@@ -23,9 +24,11 @@ public class KitPlaceholders extends PlaceholderExpansion {
 
   @Override
   public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
-    String[] parameters = params.split("_");
-
-    switch (parameters[0]) {
+    switch (params) {
+      case "current":
+        PlayerDataAPI.get().getProperties(player, playerProperties -> {
+          playerProperties.get("kits.selected");
+        });
     }
 
     return "";

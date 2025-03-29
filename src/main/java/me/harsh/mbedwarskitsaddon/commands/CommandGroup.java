@@ -40,16 +40,33 @@ public class CommandGroup implements CommandExecutor, TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
-        if (strings.length == 1)
-            return getCommandList();
-
-        return new ArrayList<>();
+        final List<String> tab = new ArrayList<>();
+        switch (strings.length){
+            case 0:
+                tab.addAll(getCommandList());
+            case 1:
+                getSubCommandArgs(0);
+            case 2:
+                getSubCommandArgs(1);
+            case 3:
+                getSubCommandArgs(2);
+        }
+        return tab;
     }
 
     public List<String> getCommandList(){
         final List<String> commands = new ArrayList<>();
         for (SubCommand subCommand : subCommands) {
             commands.add(subCommand.getCommand());
+        }
+        return commands;
+    }
+    public List<String> getSubCommandArgs(int index){
+        final List<String> commands = new ArrayList<>();
+        for (SubCommand subCommand : subCommands) {
+            final String s= subCommand.getTab().get(index);
+            if (s != null)
+                commands.add(s);
         }
         return commands;
     }

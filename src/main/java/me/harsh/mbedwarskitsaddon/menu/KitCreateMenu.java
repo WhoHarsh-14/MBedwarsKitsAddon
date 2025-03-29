@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
+import me.harsh.mbedwarskitsaddon.kits.KitManager;
 import me.harsh.mbedwarskitsaddon.utils.ArmourType;
 import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.ChatColor;
@@ -28,7 +29,7 @@ public class KitCreateMenu extends ChestGUI implements Listener {
   private final Kit kit;
 
   public KitCreateMenu(Kit kit){
-    super(6, KitsUtil.colorize("&a&lNEW KIT's ITEMS"));
+    super(6, KitsUtil.colorize(kit.getName()));
     this.kit = kit;
 
   }
@@ -49,6 +50,36 @@ public class KitCreateMenu extends ChestGUI implements Listener {
     setItem(getArmourChestplate(player), 27);
     setItem(getArmourLeggings(player), 36);
     setItem(getArmourBoots(player), 45);
+
+    setItem(createItem(player, "LIME_WOOL", () -> {
+      // Load everything from our inv -> kit.
+      for (int i = 0; i < 9; i++) {
+        final GUIItem item = getItem(i);
+        if (item == null)
+          continue;
+        kit.getItems().put(i, item.getItem());
+      }
+      for (int i = 20; i < 54; i++) {
+        if (isInterfaring(i))
+          continue;
+        final GUIItem item = getItem(i);
+        if (item == null)
+          continue;
+        kit.getItems().put(-1, item.getItem());
+      }
+      if (getItem(18) != null && !(getItem(18).equals(getArmourHelmet(player))))
+        kit.getArmour().add(getItem(18).getItem());
+      if (getItem(27) != null && !(getItem(27).equals(getArmourChestplate(player))))
+        kit.getArmour().add(getItem(27).getItem());
+      if (getItem(36) != null && !(getItem(36).equals(getArmourLeggings(player))))
+        kit.getArmour().add(getItem(36).getItem());
+      if (getItem(45) != null && !(getItem(45).equals(getArmourHelmet(player))))
+        kit.getArmour().add(getItem(45).getItem());
+
+      KitManager.getInstance().addKit(kit);
+      // Close after everything is complete.
+      player.closeInventory();
+        }, Message.build("&a&lConfirm"), Message.build("&7If the setup is complete", "&7Click this button.")), 53);
 
   }
 
@@ -79,7 +110,7 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       for (int j = 0; j < 5; j++) {
         if (!isInterfaring(i))
           break;
-        i = random.nextInt(20,53);
+        i = random.nextInt(20,52);
       }
       setItem(createItem(player, item.getType().name(), () -> {},
           Message.build(item.getItemMeta().getDisplayName()),

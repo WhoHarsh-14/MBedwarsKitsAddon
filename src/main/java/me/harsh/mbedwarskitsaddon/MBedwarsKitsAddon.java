@@ -1,6 +1,9 @@
 package me.harsh.mbedwarskitsaddon;
 
 import de.marcely.bedwars.api.BedwarsAddon;
+import java.util.Arrays;
+import me.harsh.mbedwarskitsaddon.commands.CommandGroup;
+import me.harsh.mbedwarskitsaddon.commands.KitCreateCommand;
 import org.bukkit.plugin.PluginManager;
 
 public class MBedwarsKitsAddon extends BedwarsAddon {
@@ -21,8 +24,9 @@ public class MBedwarsKitsAddon extends BedwarsAddon {
   }
 
   public void registerCommands() {
-    // REGISTER COMMANDS.
-//    new CommandGroup("mbedwarskits");
+    plugin.getCommand("kit").setExecutor(new CommandGroup("kit", Arrays.asList(
+        new KitCreateCommand()))
+    );
   }
 
 
