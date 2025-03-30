@@ -11,7 +11,6 @@ MBedwarsKitsAddon is an addon for MBedwars that introduces custom kits, allowing
 
 ## Features
 
-MBedwarsTweaks offers a large amount extra configuration, here are just a few tweaks and features it offers:
 #### 1. Custom Kits
 - Allows you to make your own custom kits
 - With detailed settings.
