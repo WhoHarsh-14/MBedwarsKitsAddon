@@ -4,3 +4,6 @@ main: me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin
 api-version: 1.13
 depend: [MBedwars]
 softdepend: [PlaceholderAPI]
+commands:
+  kit:
+

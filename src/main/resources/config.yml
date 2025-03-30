@@ -14,8 +14,9 @@ Menu:
 Messages:
   # PLAYER PLACEHOLDERS WORKS
   # %kit_name% => returns the kit (if available), %kit_id% => returns kit's id
-  Kit_No_permission: "&c&lSorry %player_name%! &7you haven't unlocked the kit yet."
-  Kit_already_selected: "&c&lSorry %player_name%! &7you have already selected %kit_name%."
-  Kit_selected: "&a&lYay %player_name%! &7You have now selected %kit_name% kit."
-  Command_invalid: "&c&lINVALID &ccommand usage!"
-  Command_invalid_material: "&c&lINVALID &cPlease use existing material name."
+  Kit_No_permission: ["&c&lSorry %player_name%! &7you haven't unlocked the kit yet."]
+  Kit_already_selected: ["&c&lSorry %player_name%! &7you have already selected %kit_name%."]
+  Kit_selected: ["&a&lYay %player_name%! &7You have now selected %kit_name% kit."]
+  Kit_given: ["&aYou got %kit_name% kit!"]
+  Command_invalid: ["&c&lINVALID &ccommand usage!"]
+  Command_invalid_material: ["&c&lINVALID &cPlease use existing material name."]

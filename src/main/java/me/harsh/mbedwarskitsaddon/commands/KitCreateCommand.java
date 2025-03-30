@@ -4,6 +4,7 @@ import de.marcely.bedwars.tools.Helper;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
 import me.harsh.mbedwarskitsaddon.menu.KitCreateMenu;
@@ -39,6 +40,7 @@ public class KitCreateCommand extends SubCommand {
     final Kit dummyKit = new Kit(id, name, icon, new HashMap<>(), new HashSet<>());
     // Open the kit creation menu to parse the items, armour
     new KitCreateMenu(dummyKit).open(player);
+    MBedwarsKitsPlugin.getInstance().getServer().getPluginManager().registerEvents(new KitCreateMenu(dummyKit), MBedwarsKitsPlugin.getInstance());
   }
 
   @Override

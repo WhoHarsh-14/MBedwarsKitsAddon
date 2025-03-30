@@ -8,7 +8,6 @@ import de.marcely.bedwars.tools.gui.type.ChestGUI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
 import me.harsh.mbedwarskitsaddon.kits.KitManager;
@@ -31,7 +30,6 @@ public class KitCreateMenu extends ChestGUI implements Listener {
   public KitCreateMenu(Kit kit) {
     super(6, KitsUtil.colorize(kit.getName()));
     this.kit = kit;
-
   }
 
 
@@ -65,8 +63,12 @@ public class KitCreateMenu extends ChestGUI implements Listener {
         final GUIItem item = getItem(i);
         if (item == null)
           continue;
+        // -1 represents there will be no index allotted
+        // to the item it'll just be #add instead of #set
         kit.getItems().put(-1, item.getItem());
       }
+
+      // Fix the mess
       if (getItem(18) != null && !(getItem(18).equals(getArmourHelmet(player))))
         kit.getArmour().add(getItem(18).getItem());
       if (getItem(27) != null && !(getItem(27).equals(getArmourChestplate(player))))

@@ -4,6 +4,7 @@ import de.marcely.bedwars.api.BedwarsAddon;
 import java.util.Arrays;
 import me.harsh.mbedwarskitsaddon.commands.CommandGroup;
 import me.harsh.mbedwarskitsaddon.commands.KitCreateCommand;
+import me.harsh.mbedwarskitsaddon.listener.PlayerListener;
 import org.bukkit.plugin.PluginManager;
 
 public class MBedwarsKitsAddon extends BedwarsAddon {
@@ -21,6 +22,8 @@ public class MBedwarsKitsAddon extends BedwarsAddon {
     final PluginManager manager = plugin.getServer().getPluginManager();
 
     // REGISTER EVENTS.
+    manager.registerEvents(new PlayerListener(), plugin);
+//    manager.registerEvents(new KitCreateMenu(), plugin);
   }
 
   public void registerCommands() {

@@ -61,4 +61,5 @@ public class KitsUtil {
     return type != ArmourType.BOOTS || itemStack.getType().name().endsWith("BOOTS");
   }
 
+
 }
