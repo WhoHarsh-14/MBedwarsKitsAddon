@@ -7,6 +7,7 @@ import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 @UtilityClass
 public class KitsUtil {
@@ -48,6 +49,16 @@ public class KitsUtil {
 
   public String getKitPerm(Kit kit){
     return "kitsaddon." + kit.getId();
+  }
+
+  public boolean typeCheck(ItemStack itemStack, ArmourType type){
+    if (type == ArmourType.HELMET && !(itemStack.getType().name().endsWith("HELMET")))
+      return false;
+    if (type == ArmourType.CHESTPLATE && !(itemStack.getType().name().endsWith("CHESTPLATE")))
+      return false;
+    if (type == ArmourType.LEGGINGS && !(itemStack.getType().name().endsWith("LEGGINGS")))
+      return false;
+    return type != ArmourType.BOOTS || itemStack.getType().name().endsWith("BOOTS");
   }
 
 }

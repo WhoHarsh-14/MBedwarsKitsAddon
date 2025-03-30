@@ -28,7 +28,7 @@ public class KitCreateMenu extends ChestGUI implements Listener {
 
   private final Kit kit;
 
-  public KitCreateMenu(Kit kit){
+  public KitCreateMenu(Kit kit) {
     super(6, KitsUtil.colorize(kit.getName()));
     this.kit = kit;
 
@@ -79,45 +79,44 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       KitManager.getInstance().addKit(kit);
       // Close after everything is complete.
       player.closeInventory();
-        }, Message.build("&a&lConfirm"), Message.build("&7If the setup is complete", "&7Click this button.")), 53);
+    }, Message.build("&a&lConfirm"), Message.build("&7If the setup is complete", "&7Click this button.")), 53);
 
   }
 
   @EventHandler
-  public void onClick(InventoryClickEvent event){
+  public void onClick(InventoryClickEvent event) {
     if (!(event.getWhoClicked() instanceof Player))
       return;
     final Player player = (Player) event.getWhoClicked();
     final Inventory inventory = event.getClickedInventory();
     if (!inventory.equals(player.getInventory()))
       return;
-    if (getPlayers().contains(player)){
+    if (getPlayers().contains(player)) {
       // Player is in our AddKitMenu
       final ItemStack item = event.getCurrentItem();
       if (item == null || item.getType() == Material.AIR || !isNotArmour(item.getType()))
         return;
       for (int i = 0; i < 9; i++) {
-        if (item.equals(inventory.getItem(i))){
+        if (item.equals(inventory.getItem(i))) {
           // Add item to hotbar
-          setItem(createItem(player, item.getType().name(), () -> {},
+          setItem(createItem(player, item.getType().name(), () -> {
+              },
               Message.build(item.getItemMeta().getDisplayName()),
               Message.build(item.getItemMeta().getLore())), i);
           return;
         }
       }
-      final Random random = new Random();
-      int i = random.nextInt(20,53);
-      for (int j = 0; j < 5; j++) {
-        if (!isInterfaring(i))
-          break;
-        i = random.nextInt(20,52);
-      }
-      setItem(createItem(player, item.getType().name(), () -> {},
+
+      final int index = getIndexFromItemStack(item, inventory);
+      final GUIItem guiItem = createItem(player, item.getType().name(), () -> {
+          },
           Message.build(item.getItemMeta().getDisplayName()),
-          Message.build(item.getItemMeta().getLore())), i);
+          Message.build(item.getItemMeta().getLore()));
+      if (index == -1)
+        addItem(guiItem);
+      else setItem(guiItem, index);
     }
   }
-
 
 
   private GUIItem createItem(Player player, String materialName, Runnable onUse, Message name, Message lore) {
@@ -140,61 +139,70 @@ public class KitCreateMenu extends ChestGUI implements Listener {
     });
   }
 
-  private GUIItem getFillerGlass(){
-    return createItem(null, "BLACK_STAINED_GLASS_PANE", () -> {}, Message.build(""), Message.build(""));
+  private GUIItem getFillerGlass() {
+    return createItem(null, "BLACK_STAINED_GLASS_PANE", () -> {
+    }, Message.build(""), Message.build(""));
   }
-  private GUIItem getRedGlass(){
-    return createItem(null, "RED_STAINED_GLASS_PANE", () -> {}, Message.build(""), Message.build(""));
+
+  private GUIItem getRedGlass() {
+    return createItem(null, "RED_STAINED_GLASS_PANE", () -> {
+    }, Message.build(""), Message.build(""));
   }
-  private GUIItem getArmourHelmet(Player player){
+
+  private GUIItem getArmourHelmet(Player player) {
     return createItem(player, "LEATHER_HELMET", () -> {
       final ItemStack item = player.getItemOnCursor();
       setArmourOnKit(item, player, ArmourType.HELMET);
     }, Message.build("Put helmet here"), Message.build());
   }
-  private GUIItem getArmourChestplate(Player player){
+
+  private GUIItem getArmourChestplate(Player player) {
     return createItem(player, "LEATHER_CHESTPLATE", () -> {
       setArmourOnKit(player.getItemOnCursor(), player, ArmourType.CHESTPLATE);
     }, Message.build("Put chestplate here"), Message.build());
   }
-  private GUIItem getArmourLeggings(Player player){
+
+  private GUIItem getArmourLeggings(Player player) {
     return createItem(player, "LEATHER_LEGGINGS", () -> {
       setArmourOnKit(player.getItemOnCursor(), player, ArmourType.LEGGINGS);
     }, Message.build("Put leggings here"), Message.build());
   }
-  private GUIItem getArmourBoots(Player player){
+
+  private GUIItem getArmourBoots(Player player) {
     return createItem(player, "LEATHER_BOOTS", () -> {
       setArmourOnKit(player.getItemOnCursor(), player, ArmourType.BOOTS);
     }, Message.build("Put boots here"), Message.build());
   }
 
-  private void setArmourOnKit(ItemStack armourPiece, Player player, ArmourType type){
-    if (armourPiece == null || !(typeCheck(armourPiece, type)))
+  private void setArmourOnKit(ItemStack armourPiece, Player player, ArmourType type) {
+    if (armourPiece == null || !(KitsUtil.typeCheck(armourPiece, type)))
       return;
     kit.addArmour(armourPiece);
-    setItem(createItem(player,armourPiece.getType().name(), () -> {}
+    setItem(createItem(player, armourPiece.getType().name(), () -> {
+        }
         , Message.build(armourPiece.getItemMeta().getDisplayName()), Message.build(armourPiece.getItemMeta().getLore())
     ), 18);
   }
 
-  private boolean isInterfaring(int bound){
-    final List<Integer> fixedIndex = Arrays.asList(18, 19,27,28,36,37,45,46);
+  private boolean isInterfaring(int bound) {
+    final List<Integer> fixedIndex = Arrays.asList(18, 19, 27, 28, 36, 37, 45, 46);
     return fixedIndex.contains(bound);
   }
 
-  private boolean isNotArmour(Material mat){
+  private boolean isNotArmour(Material mat) {
     return mat.name().endsWith("HELMET") || mat.name().endsWith("CHESTPLATE") || mat.name().endsWith("LEGGINGS") || mat.name().endsWith("BOOTS");
   }
-  private boolean typeCheck(ItemStack itemStack, ArmourType type){
-    if (type == ArmourType.HELMET && !(itemStack.getType().name().endsWith("HELMET")))
-      return false;
-    if (type == ArmourType.CHESTPLATE && !(itemStack.getType().name().endsWith("CHESTPLATE")))
-      return false;
-    if (type == ArmourType.LEGGINGS && !(itemStack.getType().name().endsWith("LEGGINGS")))
-      return false;
-    if (type == ArmourType.BOOTS && !(itemStack.getType().name().endsWith("BOOTS")))
-      return false;
-    return true;
+
+  private int getIndexFromItemStack(ItemStack item, Inventory inventory) {
+    for (int i = 0; i <= 35; i++) {
+      final ItemStack x = inventory.getItem(i);
+      if (x == null || x.getType() == Material.AIR)
+        continue;
+      if (x.equals(item))
+        return i;
+    }
+    return -1;
   }
+
 
 }

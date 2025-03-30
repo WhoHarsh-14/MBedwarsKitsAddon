@@ -59,6 +59,7 @@ public class KitManager {
         loadedKits.put(id, new Kit(id, name, icon, itemStacks, armours));
       }
 
+
     });
   }
 

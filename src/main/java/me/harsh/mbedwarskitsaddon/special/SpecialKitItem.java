@@ -6,6 +6,7 @@ import de.marcely.bedwars.api.game.lobby.LobbyItemHandler;
 
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
+import me.harsh.mbedwarskitsaddon.menu.KitMenu;
 import org.bukkit.entity.Player;
 
 
@@ -16,7 +17,7 @@ public class SpecialKitItem extends LobbyItemHandler {
 
   @Override
   public void handleUse(Player player, Arena arena, LobbyItem lobbyItem) {
-
+    new KitMenu().open(player);
   }
 
   @Override
