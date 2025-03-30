@@ -31,4 +31,4 @@ MBedwarsKitsAddon is an addon for MBedwars that introduces custom kits, allowing
 
 
 
-(note: this wiki file has been inspired by @MetallicGoat's MBedwarsTweak)
+(note: this wiki file has been HIGHLY inspired by @MetallicGoat's MBedwarsTweak)
