@@ -1,6 +1,0 @@
-name: MBedwarsKitsAddon
-version: '1.0.0'
-main: me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin
-api-version: 1.13
-depend: [MBedwars]
-softdepend: [PlaceholderAPI]
