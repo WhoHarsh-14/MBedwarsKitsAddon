@@ -100,8 +100,17 @@ public class KitManager {
     });
   }
 
+  public void loadKitsFromConfig(){
+    // TODO: Try to direct to kits.yml if exists load all the Kits from there into the player props.
+  }
+
   public void addKit(Kit kit) {
     this.getLoadedKits().put(kit.getId(), kit);
+  }
+
+
+  public void removeAllKits(){
+    this.getLoadedKits().values().forEach(this::removeKit);
   }
 
   // Have to manually remove from player data

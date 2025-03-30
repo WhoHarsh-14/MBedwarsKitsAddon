@@ -24,7 +24,7 @@ public class PlayerListener implements Listener {
         if (!remotePlayer.isPlaying())
           continue;
         PlayerDataAPI.get().getProperties(remotePlayer.getUniqueId(), playerProperties -> {
-          final String key = playerProperties.get("kits.current").orElse("None");
+          final String key = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
 
           if (key.equalsIgnoreCase("None"))
             return;

@@ -3,6 +3,7 @@ package me.harsh.mbedwarskitsaddon.placeholders;
 import de.marcely.bedwars.api.player.PlayerDataAPI;
 import java.util.concurrent.atomic.AtomicReference;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +30,7 @@ public class KitPlaceholders extends PlaceholderExpansion {
       case "current":
         final AtomicReference<String> atom = new AtomicReference<>();
         PlayerDataAPI.get().getProperties(player, playerProperties -> {
-          atom.set(playerProperties.get("kits.selected").orElse("Loading..."));
+          atom.set(playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("Loading..."));
         });
         return atom.get();
     }

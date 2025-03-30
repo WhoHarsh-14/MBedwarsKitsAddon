@@ -12,6 +12,8 @@ import org.bukkit.inventory.ItemStack;
 @UtilityClass
 public class KitsUtil {
 
+  public String KIT_CURRENT_PATH = "kits.selected";
+
   public void log(String message, boolean warn){
     if (warn)
       MBedwarsKitsPlugin.getInstance().getServer().getLogger().warning(

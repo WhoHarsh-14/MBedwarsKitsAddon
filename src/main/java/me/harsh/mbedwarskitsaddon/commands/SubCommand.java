@@ -16,10 +16,6 @@ public abstract class SubCommand {
         // do some shit.
     }
 
-    public void setTab(Map<Integer, String> tab) {
-        this.tab = tab;
-    }
-
     public Map<Integer, String> getTab() {
         return tab;
     }

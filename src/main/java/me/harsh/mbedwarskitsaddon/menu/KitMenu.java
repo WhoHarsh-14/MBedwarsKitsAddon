@@ -8,10 +8,11 @@ import de.marcely.bedwars.tools.gui.GUIItem;
 import de.marcely.bedwars.tools.gui.type.ChestGUI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
 import me.harsh.mbedwarskitsaddon.kits.KitManager;
@@ -31,24 +32,35 @@ public class KitMenu extends ChestGUI {
 
   @Override
   public void open(Player player) {
-    // TODO: MAKE THE SELECTED KIT ICON GLOW OR TELLS "Selected" IN THE LORE.
-    final String path = "kits.selected";
-    setItem(createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
-      PlayerDataAPI.get().getProperties(player, playerProperties -> {
-        playerProperties.set(path, "None");
+
+    PlayerDataAPI.get().getProperties(player, playerProperties -> {
+      // Get the player props
+      final String currentId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
+
+      createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
+        playerProperties.set(KitsUtil.KIT_CURRENT_PATH, "None");
         updateMenu(player);
+      }, Message.build("None"), Message.build(""), guiItem -> {
+        updateGUIItem(currentId, guiItem.getItem());
+        setItem(guiItem, 0);
       });
-    }, Message.build("None"), Message.build("")), 0);
-    for (Kit kit : KitManager.getInstance().getLoadedKits().values()) {
-      addItem(createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
-        // Set the selected kit to the clicked one.
-        selectKit(kit, player, path);
-        updateMenu(player);
-      }, Message.build(kit.getName()), Message.build("")));
-    }
+
+      for (Kit kit : KitManager.getInstance().getLoadedKits().values()) {
+        createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
+          selectKit(kit, player, KitsUtil.KIT_CURRENT_PATH);
+          updateMenu(player);
+        }, Message.build(kit.getName()), Message.build(""), guiItem -> {
+          updateGUIItem(currentId, guiItem.getItem());
+          addItem(guiItem);
+        });
+      }
+
+
+    });
+
   }
 
-  private GUIItem createItem(Player player, String materialName, String permission, Runnable onUse, Message name, Message lore) {
+  private void createItem(Player player, String materialName, String permission, Runnable onUse, Message name, Message lore, Consumer<GUIItem> callback) {
     ItemStack is = NMSHelper.get().hideAttributes(Helper.get().parseItemStack(materialName));
 
     final ItemMeta im = is.getItemMeta();
@@ -62,31 +74,13 @@ public class KitMenu extends ChestGUI {
     im.setDisplayName(KitsUtil.colorize(name.done(player, false)));
     im.setLore(loreList);
     is.setItemMeta(im);
-
-    // Maybe wont work as GUIItem is returned before it updates.
-    PlayerDataAPI.get().getProperties(player, playerProperties -> {
-      final String currentId = playerProperties.get("kits_current").orElse("None");
-      final Kit kit = KitManager.getInstance().getLoadedKits().get(currentId);
-      if (kit == null)
-        return;
-      if (kit.getIcon().equals(is)){
-        is.addEnchantment(Enchantment.ARROW_INFINITE, 1);
-        final ItemMeta meta = is.getItemMeta();
-        meta.setDisplayName(kit.getName());
-        meta.setLore(Arrays.asList(KitsUtil.colorize("&aSelected")));
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        is.setItemMeta(meta);
-      }
-    });
-
-    // TODO: Move this into player props add a call back in this function then callback.accept it to make it work???
-    return new GUIItem(is, (g0, g1, g2) -> {
+    callback.accept(new GUIItem(is, (g0, g1, g2) -> {
       if (KitConfig.PER_KIT_PERM && !player.hasPermission(permission)) {
         KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_No_permission"));
         return;
       }
       onUse.run();
-    });
+    }));
   }
 
   private void selectKit(Kit kit, Player player, String path) {
@@ -108,6 +102,20 @@ public class KitMenu extends ChestGUI {
     });
   }
 
+
+  private void updateGUIItem(String currentId, ItemStack original) {
+    final Kit kit = KitManager.getInstance().getLoadedKits().get(currentId);
+    if (kit == null)
+      return;
+    if (kit.getIcon().equals(original)) {
+      original.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+      final ItemMeta meta = original.getItemMeta();
+      meta.setDisplayName(kit.getName());
+      meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
+      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+      original.setItemMeta(meta);
+    }
+  }
   private void updateMenu(Player player){
     player.closeInventory();
     open(player);

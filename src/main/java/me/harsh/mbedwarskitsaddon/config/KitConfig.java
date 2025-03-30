@@ -31,6 +31,7 @@ public class KitConfig {
 
   public KitConfig(MBedwarsKitsPlugin plugin) {
     config = plugin.getConfig();
+    plugin.saveDefaultConfig();
   }
 
   public void loadConfiguration() {
