@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 public class Kit {
   private final String id;
   private String name;
+  private String permission;
   private ItemStack icon;
   private Map<Integer, ItemStack> items;
   // Armour in extra set because kits can be edited. Makes easier to track them this way.
@@ -22,7 +23,9 @@ public class Kit {
     this.icon = icon;
     this.name = name;
     this.armour = armour;
+    this.permission = "kitsaddon." + id;
   }
+
 
   public void addItem(int index, ItemStack itemStack){
     this.items.put(index, itemStack);

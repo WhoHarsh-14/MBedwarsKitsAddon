@@ -1,7 +1,5 @@
 package me.harsh.mbedwarskitsaddon.commands;
 
-import java.util.HashMap;
-import java.util.Map;
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
@@ -17,6 +15,9 @@ public class KitEditCommand extends SubCommand {
 
   @Override
   public void onCommand(Player player, String[] args) {
+    if (!player.hasPermission(KitsUtil.KIT_ADMIN_PERM))
+      return;
+
     // /kit edit <id>
     if (args.length != 1) {
       KitsUtil.tell(player, KitConfig.getMessagesMap().get("Command_invalid"));
@@ -33,10 +34,4 @@ public class KitEditCommand extends SubCommand {
     MBedwarsKitsPlugin.getInstance().getServer().getPluginManager().registerEvents(menu, MBedwarsKitsPlugin.getInstance());
   }
 
-  @Override
-  public Map<Integer, String> getTab() {
-    final Map<Integer,String> tab = new HashMap<>();
-    tab.put(0, "<id>");
-    return tab;
-  }
 }

@@ -59,11 +59,13 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       // Load everything from our inv -> kit.
       for (int i = 0; i <= 8; i++) {
         final GUIItem item = getItem(i);
-        if (item == null || item.getItem().getType() == getGrayGlass().getItem().getType())
+        if (item == null || item.getItem().getType() == getGrayGlass().getItem().getType()) {
+          System.out.println("Item is null at index " + i);
           continue;
+        }
         kit.getItems().put(i, item.getItem());
       }
-      for (int i = 20; i < 54; i++) {
+      for (int i = 20; i < 53; i++) {
         if (isInterfaring(i))
           continue;
         final GUIItem item = getItem(i);
@@ -84,10 +86,6 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       if (getItem(45) != null && !(getItem(45).equals(getArmourHelmet(player))))
         kit.getArmour().add(getItem(45).getItem());
 
-      System.out.println("Kit has been added with id " + kit.getId() + " and name " + kit.getName());
-      System.out.println("Here is the Items and Armour");
-      System.out.println(kit.getItems().values());
-      System.out.println(kit.getArmour().toString());
       KitManager.getInstance().addKit(kit);
       // Close after everything is complete.
       player.closeInventory();
@@ -120,6 +118,10 @@ public class KitCreateMenu extends ChestGUI implements Listener {
           Message.build(
               item.getItemMeta().getLore() == null ? Collections.emptyList(): item.getItemMeta().getLore()
           ));
+
+      // Copies over the Enchants and everything....
+      guiItem.getItem().setItemMeta(item.getItemMeta());
+      guiItem.getItem().setAmount(item.getAmount());
 
       if (event.getSlot() > 8)
         addItem(guiItem);
@@ -191,7 +193,7 @@ public class KitCreateMenu extends ChestGUI implements Listener {
     if (armourPiece == null || !(KitsUtil.typeCheck(armourPiece, type)))
       return;
     kit.addArmour(armourPiece);
-    setItem(createItem(player, armourPiece.getType().name(), () -> {
+    final GUIItem guiItem = createItem(player, armourPiece.getType().name(), () -> {
         }
         , Message.build(
             armourPiece.getItemMeta().hasDisplayName() ? armourPiece.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(armourPiece)
@@ -199,7 +201,10 @@ public class KitCreateMenu extends ChestGUI implements Listener {
         Message.build(
             armourPiece.getItemMeta().getLore()==null ? Collections.emptyList() : armourPiece.getItemMeta().getLore()
         )
-    ), getArmourIndex(armourPiece));
+    );
+
+    guiItem.getItem().setItemMeta(armourPiece.getItemMeta());
+    setItem(guiItem, getArmourIndex(armourPiece));
   }
 
   private boolean isInterfaring(int bound) {
@@ -209,17 +214,6 @@ public class KitCreateMenu extends ChestGUI implements Listener {
 
   private boolean isNotArmour(Material mat) {
     return mat.name().endsWith("HELMET") || mat.name().endsWith("CHESTPLATE") || mat.name().endsWith("LEGGINGS") || mat.name().endsWith("BOOTS");
-  }
-
-  private int getIndexFromItemStack(ItemStack item, Inventory inventory) {
-    for (int i = 0; i <= 35; i++) {
-      final ItemStack x = inventory.getItem(i);
-      if (x == null || x.getType() == Material.AIR)
-        continue;
-      if (x.equals(item))
-        return i;
-    }
-    return -1;
   }
 
   private int getArmourIndex(ItemStack armour){

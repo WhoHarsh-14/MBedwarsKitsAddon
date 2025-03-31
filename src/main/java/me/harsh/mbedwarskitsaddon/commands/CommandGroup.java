@@ -52,7 +52,7 @@ public class CommandGroup implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
         final List<String> tab = new ArrayList<>();
-        if (strings[0].equalsIgnoreCase("remove") && strings.length == 2){
+        if ((strings[0].equalsIgnoreCase("remove") || strings[0].equalsIgnoreCase("edit"))&& strings.length == 2){
             return new ArrayList<>(KitManager.getInstance().getLoadedKits().keySet());
         }
         switch (strings.length){

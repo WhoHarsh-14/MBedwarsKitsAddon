@@ -15,6 +15,8 @@ public class KitRemoveCommand extends SubCommand {
 
   @Override
   public void onCommand(Player player, String[] args) {
+    if (!player.hasPermission(KitsUtil.KIT_ADMIN_PERM))
+      return;
     // /kit remove <id>
     if (args.length != 1) {
       KitsUtil.tell(player, KitConfig.getMessagesMap().get("Command_invalid"));

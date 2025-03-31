@@ -22,6 +22,9 @@ public class KitCreateCommand extends SubCommand {
 
   @Override
   public void onCommand(Player player, String[] args) {
+    if (!player.hasPermission(KitsUtil.KIT_ADMIN_PERM))
+      return;
+
     // /kit create <id> <name> <icon>
     if (args.length != 3) {
       KitsUtil.tell(player, KitConfig.getMessagesMap().get("Command_invalid"));

@@ -45,6 +45,10 @@ public class KitMenu extends ChestGUI {
 
     for (Kit kit : KitManager.getInstance().getLoadedKits().values()) {
       createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
+        if (!player.hasPermission(kit.getPermission())){
+          KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_No_permission"), kit);
+          return;
+        }
         selectKit(kit, player, KitsUtil.KIT_CURRENT_PATH);
       }, Message.build(kit.getName()), Message.build(""), this::addItem);
     }

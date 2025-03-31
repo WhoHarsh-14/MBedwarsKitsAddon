@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 public class KitsUtil {
 
   public String KIT_CURRENT_PATH = "kits_selected";
+  public String KIT_ADMIN_PERM = "kitsaddon.admin";
 
   public void log(String message, boolean warn){
     if (warn)
