@@ -36,10 +36,9 @@ public class CommandGroup implements CommandExecutor, TabCompleter {
                 KitsUtil.tell(player, KitConfig.getMessagesMap().get("Command_help"));
                 return false;
             }
-            System.out.println("Command used (over 1 arg)");
             for (SubCommand subCommand : subCommands) {
                 if (subCommand.getCommand().equalsIgnoreCase(strings[0])){
-                    System.out.println("Sub command found! : " + strings[0]);
+//                    System.out.println("Sub command found! : " + strings[0]);
                     final String[] args = remove(strings.clone(), 0);
                     subCommand.onCommand(player,args);
                 }

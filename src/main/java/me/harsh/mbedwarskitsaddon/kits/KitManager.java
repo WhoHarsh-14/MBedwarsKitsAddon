@@ -4,10 +4,12 @@ import de.marcely.bedwars.api.BedwarsAPI;
 import de.marcely.bedwars.tools.Helper;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -100,7 +102,7 @@ public class KitManager {
 
       // There is a change in kits perhaps
       for (Kit value : this.getLoadedKits().values()) {
-        final String path = "kits_" + value.getId() + "_";
+        final String path = "kits_" + value.getId().toLowerCase().replace(" ", "_") + "_";
         // Kit is present already.
         if (playerProperties.get(path + "name")
             .orElse("")
@@ -110,19 +112,18 @@ public class KitManager {
         // Saves the new kit.
         playerProperties.set(path + "name", value.getName());
         playerProperties.set(path + "icon", Helper.get().composeItemStack(value.getIcon()));
-        System.out.println(value.getItems().values());
+
         value.getItems().forEach((integer, itemStack) -> {
           playerProperties.set(path + "items_" +
-                  (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : itemStack.getType().name())
+                  (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName().toLowerCase().replace(" ", "_") : itemStack.getType().name().toLowerCase().replace(" ", "_"))
               , Helper.get().composeItemStack(itemStack));
           playerProperties.set(path + "items_" +
-              (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : itemStack.getType().name())
+              (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName().toLowerCase().replace(" ", "_") : itemStack.getType().name().toLowerCase().replace(" ", "_"))
               + "_index", integer);
         });
 
-
         value.getArmour().forEach(itemStack -> playerProperties.set(path + "armour_" +
-                (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : itemStack.getType().name())
+                (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName().toLowerCase().replace(" ", "_") : itemStack.getType().name().toLowerCase().replace(" ", "_"))
             , Helper.get().composeItemStack(itemStack)));
 
 
@@ -148,26 +149,31 @@ public class KitManager {
         final ItemStack icon = Helper.get().parseItemStack(iconData);
 
         final Map<Integer, ItemStack> items = new HashMap<>();
-        final ConfigurationSection itemsSection = kitSection.getConfigurationSection("Items");
-        if (itemsSection != null) {
-          for (final String itemKey : itemsSection.getKeys(false)) {
-            final String itemData = itemsSection.getString(itemKey);
-            final ItemStack item = Helper.get().parseItemStack(itemData);
+        final List<Map<?, ?>> itemsMap = kitSection.getMapList("Items");
 
-            if (item != null) {
-              final int slot = itemsSection.getInt(itemKey + ".slot", -1);
-              if (slot >= 0 && slot <= 8) {
-                items.put(slot, item);
-              } else if (slot == -1) {
-                for (int i = 0; i <= 8; i++) {
-                  if (!items.containsKey(i)) {
-                    items.put(i, item);
-                    break;
-                  }
-                }
-              }
-            }
+        for (Map<?, ?> map : itemsMap) {
+          // int:str
+          for (int i = 0; i <= 8; i++) {
+            final String key = (String) map.get(i);
+            if (key == null || !map.containsKey(i))
+              continue;
+            final ItemStack item = Helper.get().parseItemStack(key);
+            if (item == null)
+              continue;
+            items.put(i, item);
           }
+
+          // Remaining.
+          for (int i = 50; i < 101; i++) {
+            if (!map.containsKey(i))
+              continue;
+            final String key = (String) map.get(i);
+            final ItemStack itemStack = Helper.get().parseItemStack(key);
+            if (itemStack == null)
+              continue;
+            items.put(-1, itemStack);
+          }
+
         }
 
         final Set<ItemStack> armour = new HashSet<>();
@@ -185,7 +191,7 @@ public class KitManager {
         final Kit kit = new Kit(kitId, name, icon, items, armour);
         addKit(kit);
       } catch (Exception e) {
-        System.out.println("Failed to load kit: " + kitId + " Error: " + e.getMessage());
+//        System.out.println("Failed to load kit: " + kitId + " Error: " + e.getMessage());
         e.printStackTrace();
       }
     }
@@ -204,16 +210,21 @@ public class KitManager {
       config.set(basePath + "Name", kit.getName());
       config.set(basePath + "Icon", Helper.get().composeItemStack(kit.getIcon()));
 
+      final List<Map<Integer, String>> indexItemMapList = new ArrayList<>();
       kit.getItems().forEach((slot, item) -> {
-        final String itemName = item.getItemMeta().hasDisplayName() ?
-            item.getItemMeta().getDisplayName() :
-            item.getType().name();
-        final String itemPath = basePath + "Items." + itemName;
+        final Map<Integer, String> map = new HashMap<>();
+        if (slot == -1){
+          // Getting a random number above 50 (Add)
+          final Random random = new Random();
+          final int i = random.nextInt(50, 100);
+          map.put(i, Helper.get().composeItemStack(item));
+        }else map.put(slot, Helper.get().composeItemStack(item));
 
-        // TODO: Fix this shit, idk why items are not being stored like they are supposed to somehow armours work just fine (with same method)
-        config.set(itemPath, Helper.get().composeItemStack(item));
-        config.set(itemPath + ".slot", slot);
+        indexItemMapList.add(map);
+//        config.set(itemPath, Helper.get().composeItemStack(item));
+//        config.set(itemPath + ".slot", slot);
       });
+      config.set(basePath + "Items", indexItemMapList);
 
       kit.getArmour().forEach(armourPiece -> {
         final String armourName = armourPiece.getItemMeta().hasDisplayName() ?
@@ -228,7 +239,7 @@ public class KitManager {
     try {
       config.save(kitsFile);
     } catch (IOException e) {
-      System.out.println("Failed to save kits: " + e.getMessage());
+//      System.out.println("Failed to save kits: " + e.getMessage());
     }
   }
 

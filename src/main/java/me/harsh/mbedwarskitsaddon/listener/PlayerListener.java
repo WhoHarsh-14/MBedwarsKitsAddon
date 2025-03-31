@@ -25,7 +25,7 @@ public class PlayerListener implements Listener {
       PlayerDataAPI.get().getProperties(player.getUniqueId(), playerProperties -> {
         final String key = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
         if (key.equalsIgnoreCase("None")) {
-          System.out.println("Key is None");
+//          System.out.println("Key is None");
           return;
         }
 
@@ -38,16 +38,13 @@ public class PlayerListener implements Listener {
         Bukkit.getScheduler().runTaskLater(MBedwarsKitsPlugin.getInstance(), () -> {
           final PlayerInventory inventory = player.getInventory();
           inventory.clear();
-          System.out.println(kit.getArmour().toString());
-          System.out.println(kit.getItems().values());
           kit.getItems().forEach((integer, itemStack) -> {
-            System.out.println("Adding Item at index " + integer + " with the item: " + itemStack.getType().name());
             if (integer == -1)
               inventory.addItem(itemStack);
             else inventory.setItem(integer, itemStack);
           });
           for (ItemStack itemStack : kit.getArmour()) {
-            System.out.println("Setting armour : " + itemStack.getType().name());
+//            System.out.println("Setting armour : " + itemStack.getType().name());
             switch (KitsUtil.getArmourType(itemStack)){
               case HELMET:
                 inventory.setHelmet(itemStack);

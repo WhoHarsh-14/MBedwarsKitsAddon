@@ -60,7 +60,7 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       for (int i = 0; i <= 8; i++) {
         final GUIItem item = getItem(i);
         if (item == null || item.getItem().getType() == getGrayGlass().getItem().getType()) {
-          System.out.println("Item is null at index " + i);
+//          System.out.println("Item is null at index " + i);
           continue;
         }
         kit.getItems().put(i, item.getItem());

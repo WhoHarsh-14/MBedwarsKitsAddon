@@ -37,6 +37,7 @@ public class KitMenu extends ChestGUI {
   public void draw(Player player){
     // Get the player props
 
+    System.out.println("Drawing Menu....");
     createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
       playerProperties.set(KitsUtil.KIT_CURRENT_PATH, "None");
     }, Message.build("None"), Message.build(""), guiItem -> {
@@ -79,10 +80,17 @@ public class KitMenu extends ChestGUI {
     });
     final String currentId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
     final Kit kit = KitManager.getInstance().getLoadedKits().get(currentId);
-    if (kit == null)
+    if (kit == null){
+      if (item.getItem().getType() == Helper.get().getMaterialByName("WHITE_STAINED_GLASS_PANE")){
+        final ItemMeta meta = item.getItem().getItemMeta();
+        meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
+        item.getItem().setItemMeta(meta);
+      }
+      callback.accept(item);
       return;
+    }
     if (kit.getIcon().equals(item.getItem())) {
-      item.getItem().addEnchantment(Enchantment.ARROW_INFINITE, 1);
+      item.getItem().addEnchantment(Enchantment.KNOCKBACK, 1);
       final ItemMeta meta = item.getItem().getItemMeta();
       meta.setDisplayName(kit.getName());
       meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
