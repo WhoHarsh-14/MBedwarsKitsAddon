@@ -1,6 +1,7 @@
 package me.harsh.mbedwarskitsaddon.menu;
 
 import de.marcely.bedwars.api.message.Message;
+import de.marcely.bedwars.api.player.PlayerProperties;
 import de.marcely.bedwars.tools.Helper;
 import de.marcely.bedwars.tools.NMSHelper;
 import de.marcely.bedwars.tools.gui.GUIItem;
@@ -23,17 +24,16 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class KitCreateMenu extends ChestGUI implements Listener {
+public class KitEditMenu extends ChestGUI implements Listener {
 
   private final Kit kit;
 
-  public KitCreateMenu(Kit kit) {
-    super(6, KitsUtil.colorize(kit.getName()));
+  public KitEditMenu(Kit kit) {
+    super(6, KitsUtil.colorize("&6&lEditting: &r" + kit.getName()));
     this.kit = kit;
   }
 
-
-  public void draw(Player player){
+  public void draw(Player player) {
     // ABOVE BLACK -> Hotbar
     // SIDE FROM RED -> Armour
     for (int i = 9; i <= 17; i++) {
@@ -43,12 +43,45 @@ public class KitCreateMenu extends ChestGUI implements Listener {
     setItem(getRedGlass(), 28);
     setItem(getRedGlass(), 37);
     setItem(getRedGlass(), 46);
-    setItem(getArmourHelmet(player), 18);
-    setItem(getArmourChestplate(player), 27);
-    setItem(getArmourLeggings(player), 36);
-    setItem(getArmourBoots(player), 45);
 
+    // Load items
+    kit.getItems().forEach((index, item) -> {
+      final GUIItem guiItem = createItem(player, item.getType().name(), () -> {
+        // Remove from menu.
+        item.setType(Material.AIR);
+
+      }, Message.build(item.getItemMeta().getDisplayName()), Message.build(KitsUtil.colorize("&cCLICK TO REMOVE")));
+      if (index == -1) {
+        addItem(guiItem);
+      }
+      setItem(guiItem, index);
+    });
+
+    // Load armours
+    for (ItemStack armour : kit.getArmour()) {
+      final GUIItem guiItem = createItem(player, armour.getType().name(), () -> {
+        final ArmourType type = KitsUtil.getArmourType(armour);
+        final int index = KitsUtil.getIndexFromType(armour);
+        switch (type){
+          case HELMET:
+            setItem(getArmourHelmet(player), index);
+          case CHESTPLATE:
+            setItem(getArmourChestplate(player), index);
+          case LEGGINGS:
+            setItem(getArmourLeggings(player), index);
+          case BOOTS:
+            setItem(getArmourBoots(player), index);
+        }
+      }, Message.build(armour.getItemMeta().getDisplayName()), Message.build(KitsUtil.colorize("&cCLICK TO REMOVE")));
+      setItem(guiItem, KitsUtil.getIndexFromType(armour));
+    }
+
+    // SAVE BUTTON
     setItem(createItem(player, "LIME_WOOL", () -> {
+      kit.getArmour().clear();
+      kit.getItems().clear();
+      KitManager.getInstance().removeKit(kit.getId());
+
       // Load everything from our inv -> kit.
       for (int i = 0; i < 9; i++) {
         final GUIItem item = getItem(i);
@@ -93,7 +126,7 @@ public class KitCreateMenu extends ChestGUI implements Listener {
     if (!inventory.equals(player.getInventory()))
       return;
     if (getPlayers().contains(player)) {
-      // Player is in our AddKitMenu
+      // Player is in our EditKitMenu
       final ItemStack item = event.getCurrentItem();
       if (item == null || item.getType() == Material.AIR || !isNotArmour(item.getType()))
         return;

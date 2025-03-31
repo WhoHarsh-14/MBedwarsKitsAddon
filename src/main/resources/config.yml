@@ -16,6 +16,9 @@ Messages:
   # %kit_name% => returns the kit (if available), %kit_id% => returns kit's id
   Kit_No_permission: ["&c&lSorry %player_name%! &7you haven't unlocked the kit yet."]
   Kit_already_selected: ["&c&lSorry %player_name%! &7you have already selected %kit_name%."]
+  Kit_already_exists: ["&c&lSorry %player_name%! &7%kit_name% kit already exists with that id."]
+  Kit_does_not_exists: ["&c&lSorry %player_name%! &7%kit does not exists with that id."]
+  Kit_removed: ["&a&lYAY! &7%kit with the id %kit_id% has been removed."]
   Kit_selected: ["&a&lYay %player_name%! &7You have now selected %kit_name% kit."]
   Kit_given: ["&aYou got %kit_name% kit!"]
   Command_invalid: ["&c&lINVALID &ccommand usage!"]

@@ -4,9 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 @Getter
 @Setter

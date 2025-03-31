@@ -7,6 +7,7 @@ import java.util.Map;
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
+import me.harsh.mbedwarskitsaddon.kits.KitManager;
 import me.harsh.mbedwarskitsaddon.menu.KitCreateMenu;
 import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.Material;
@@ -27,6 +28,10 @@ public class KitCreateCommand extends SubCommand {
       return;
     }
     final String id = args[0];
+    if (KitManager.getInstance().getLoadedKits().containsKey(id)){
+      KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_already_exists"), new Kit(id, null, null, null, null));
+      return;
+    }
     final String name = args[1];
     final Material mat = Helper.get().getMaterialByName(args[2]);
     if (mat == null){
@@ -39,8 +44,10 @@ public class KitCreateCommand extends SubCommand {
     icon.setItemMeta(iconMeta);
     final Kit dummyKit = new Kit(id, name, icon, new HashMap<>(), new HashSet<>());
     // Open the kit creation menu to parse the items, armour
-    new KitCreateMenu(dummyKit).open(player);
-    MBedwarsKitsPlugin.getInstance().getServer().getPluginManager().registerEvents(new KitCreateMenu(dummyKit), MBedwarsKitsPlugin.getInstance());
+    final KitCreateMenu menu = new KitCreateMenu(dummyKit);
+    menu.draw(player);
+    menu.open(player);
+    MBedwarsKitsPlugin.getInstance().getServer().getPluginManager().registerEvents(menu, MBedwarsKitsPlugin.getInstance());
   }
 
   @Override

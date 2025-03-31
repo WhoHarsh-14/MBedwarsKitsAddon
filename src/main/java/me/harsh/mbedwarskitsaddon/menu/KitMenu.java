@@ -1,7 +1,7 @@
 package me.harsh.mbedwarskitsaddon.menu;
 
 import de.marcely.bedwars.api.message.Message;
-import de.marcely.bedwars.api.player.PlayerDataAPI;
+import de.marcely.bedwars.api.player.PlayerProperties;
 import de.marcely.bedwars.tools.Helper;
 import de.marcely.bedwars.tools.NMSHelper;
 import de.marcely.bedwars.tools.gui.GUIItem;
@@ -26,39 +26,36 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class KitMenu extends ChestGUI {
 
-  public KitMenu() {
+  private final PlayerProperties playerProperties;
+
+  public KitMenu(PlayerProperties playerProperties) {
     super(6, KitsUtil.colorize(KitConfig.KIT_MENU_TITLE));
+    this.playerProperties = playerProperties;
   }
 
-  @Override
-  public void open(Player player) {
 
-    PlayerDataAPI.get().getProperties(player, playerProperties -> {
-      // Get the player props
-      final String currentId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
+  public void draw(Player player){
+    // Get the player props
+    final String currentId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
 
-      createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
-        playerProperties.set(KitsUtil.KIT_CURRENT_PATH, "None");
-        updateMenu(player);
-      }, Message.build("None"), Message.build(""), guiItem -> {
-        updateGUIItem(currentId, guiItem.getItem());
-        setItem(guiItem, 0);
-      });
-
-      for (Kit kit : KitManager.getInstance().getLoadedKits().values()) {
-        createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
-          selectKit(kit, player, KitsUtil.KIT_CURRENT_PATH);
-          updateMenu(player);
-        }, Message.build(kit.getName()), Message.build(""), guiItem -> {
-          updateGUIItem(currentId, guiItem.getItem());
-          addItem(guiItem);
-        });
-      }
-
-
+    createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
+      playerProperties.set(KitsUtil.KIT_CURRENT_PATH, "None");
+    }, Message.build("None"), Message.build(""), guiItem -> {
+      updateGUIItem(currentId, guiItem.getItem());
+      setItem(guiItem, 0);
     });
 
+    for (Kit kit : KitManager.getInstance().getLoadedKits().values()) {
+      createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
+        selectKit(kit, player, KitsUtil.KIT_CURRENT_PATH);
+      }, Message.build(kit.getName()), Message.build(""), guiItem -> {
+        updateGUIItem(currentId, guiItem.getItem());
+        addItem(guiItem);
+      });
+    }
   }
+
+
 
   private void createItem(Player player, String materialName, String permission, Runnable onUse, Message name, Message lore, Consumer<GUIItem> callback) {
     ItemStack is = NMSHelper.get().hideAttributes(Helper.get().parseItemStack(materialName));
@@ -84,22 +81,20 @@ public class KitMenu extends ChestGUI {
   }
 
   private void selectKit(Kit kit, Player player, String path) {
-    PlayerDataAPI.get().getProperties(player, playerProperties -> {
-      final Optional<String> currentKit = playerProperties.get(path);
+    final Optional<String> currentKit = playerProperties.get(path);
 
-      if (!currentKit.isPresent()) {
-        playerProperties.set(path, kit.getIcon());
-        KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_selected"), kit);
-        return;
-      }
-
-      if (currentKit.get().equalsIgnoreCase(kit.getId())) {
-        KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_already_selected"), kit);
-        return;
-      }
-      playerProperties.replace(path, kit.getId());
+    if (!currentKit.isPresent()) {
+      playerProperties.set(path, kit.getIcon());
       KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_selected"), kit);
-    });
+      return;
+    }
+
+    if (currentKit.get().equalsIgnoreCase(kit.getId())) {
+      KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_already_selected"), kit);
+      return;
+    }
+    playerProperties.replace(path, kit.getId());
+    KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_selected"), kit);
   }
 
 
@@ -115,10 +110,6 @@ public class KitMenu extends ChestGUI {
       meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
       original.setItemMeta(meta);
     }
-  }
-  private void updateMenu(Player player){
-    player.closeInventory();
-    open(player);
   }
 
 }

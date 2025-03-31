@@ -4,6 +4,8 @@ import de.marcely.bedwars.api.BedwarsAddon;
 import java.util.Arrays;
 import me.harsh.mbedwarskitsaddon.commands.CommandGroup;
 import me.harsh.mbedwarskitsaddon.commands.KitCreateCommand;
+import me.harsh.mbedwarskitsaddon.commands.KitEditCommand;
+import me.harsh.mbedwarskitsaddon.commands.KitRemoveCommand;
 import me.harsh.mbedwarskitsaddon.listener.PlayerListener;
 import org.bukkit.plugin.PluginManager;
 
@@ -28,8 +30,10 @@ public class MBedwarsKitsAddon extends BedwarsAddon {
 
   public void registerCommands() {
     plugin.getCommand("kit").setExecutor(new CommandGroup("kit", Arrays.asList(
-        new KitCreateCommand()))
-    );
+        new KitCreateCommand(),
+        new KitRemoveCommand(),
+        new KitEditCommand()
+    )));
   }
 
 

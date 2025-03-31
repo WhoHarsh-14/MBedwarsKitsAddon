@@ -1,11 +1,14 @@
 package me.harsh.mbedwarskitsaddon.utils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,7 +37,7 @@ public class KitsUtil {
   }
   public void tell(Player player, String message, Kit kit){
     player.sendMessage(colorize(PlaceholderAPI.setPlaceholders(player, message
-        .replace("%kit_name%", kit.getName())
+        .replace("%kit_name%", kit.getName() == null ? "": kit.getName())
         .replace("%kit_id%", kit.getId())
     )));
   }
@@ -63,5 +66,32 @@ public class KitsUtil {
     return type != ArmourType.BOOTS || itemStack.getType().name().endsWith("BOOTS");
   }
 
+  public ArmourType getArmourType(ItemStack item){
+    if (item.getType().name().endsWith("HELMET"))
+      return ArmourType.HELMET;
+    if (item.getType().name().endsWith("CHESTPLATE"))
+      return ArmourType.CHESTPLATE;
+    if (item.getType().name().endsWith("LEGGINGS"))
+      return ArmourType.LEGGINGS;
+    if (item.getType().name().endsWith("BOOTS"))
+      return ArmourType.BOOTS;
+
+    return null;
+  }
+  public int getIndexFromType(ItemStack item){
+    final ArmourType type = getArmourType(item);
+    switch (type){
+      case HELMET:
+        return 18;
+      case CHESTPLATE:
+        return 27;
+      case LEGGINGS:
+        return 36;
+      case BOOTS:
+        return 45;
+      default:
+        return -1;
+    }
+  }
 
 }

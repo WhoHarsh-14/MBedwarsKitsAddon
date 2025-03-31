@@ -104,17 +104,22 @@ public class KitManager {
     // TODO: Try to direct to kits.yml if exists load all the Kits from there into the player props.
   }
 
+  public void loadKitsIntoConfig(){
+    // TODO: Save all kits into a file kits.yml
+  }
+
   public void addKit(Kit kit) {
     this.getLoadedKits().put(kit.getId(), kit);
   }
 
 
   public void removeAllKits(){
-    this.getLoadedKits().values().forEach(this::removeKit);
+    this.getLoadedKits().values().forEach(kit -> removeKit(kit.getId()));
   }
 
   // Have to manually remove from player data
-  public void removeKit(Kit kit) {
+  public void removeKit(String kitId) {
+    final Kit kit = getLoadedKits().get(kitId);
     final String path = "kits." + kit.getId() + ".";
     this.getLoadedKits().remove(kit.getId());
     BedwarsAPI.getPlayerDataAPI().getProperties(new UUID(0, 0), playerProperties -> {
