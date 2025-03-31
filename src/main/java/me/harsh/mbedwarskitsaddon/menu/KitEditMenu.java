@@ -8,6 +8,7 @@ import de.marcely.bedwars.tools.gui.GUIItem;
 import de.marcely.bedwars.tools.gui.type.ChestGUI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
@@ -72,7 +73,9 @@ public class KitEditMenu extends ChestGUI implements Listener {
           case BOOTS:
             setItem(getArmourBoots(player), index);
         }
-      }, Message.build(armour.getItemMeta().getDisplayName()), Message.build(KitsUtil.colorize("&cCLICK TO REMOVE")));
+      }, Message.build(
+          armour.getItemMeta().hasDisplayName() ? armour.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(armour)
+      ), Message.build(KitsUtil.colorize("&cCLICK TO REMOVE")));
       setItem(guiItem, KitsUtil.getIndexFromType(armour));
     }
 
@@ -130,25 +133,14 @@ public class KitEditMenu extends ChestGUI implements Listener {
       final ItemStack item = event.getCurrentItem();
       if (item == null || item.getType() == Material.AIR || !isNotArmour(item.getType()))
         return;
-      for (int i = 0; i < 9; i++) {
-        if (item.equals(inventory.getItem(i))) {
-          // Add item to hotbar
-          setItem(createItem(player, item.getType().name(), () -> {
-              },
-              Message.build(item.getItemMeta().getDisplayName()),
-              Message.build(item.getItemMeta().getLore())), i);
-          return;
-        }
-      }
 
-      final int index = getIndexFromItemStack(item, inventory);
       final GUIItem guiItem = createItem(player, item.getType().name(), () -> {
           },
-          Message.build(item.getItemMeta().getDisplayName()),
-          Message.build(item.getItemMeta().getLore()));
-      if (index == -1)
+          Message.build(item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(item)),
+          Message.build(item.getItemMeta().getLore()==null ? Collections.emptyList() : item.getItemMeta().getLore()));
+      if (event.getSlot() > 8)
         addItem(guiItem);
-      else setItem(guiItem, index);
+      else setItem(guiItem, event.getSlot());
     }
   }
 
@@ -214,8 +206,9 @@ public class KitEditMenu extends ChestGUI implements Listener {
     kit.addArmour(armourPiece);
     setItem(createItem(player, armourPiece.getType().name(), () -> {
         }
-        , Message.build(armourPiece.getItemMeta().getDisplayName()), Message.build(armourPiece.getItemMeta().getLore())
-    ), 18);
+        , Message.build(armourPiece.getItemMeta().hasDisplayName() ? armourPiece.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(armourPiece)),
+        Message.build(armourPiece.getItemMeta().getLore()==null ? Collections.emptyList() : armourPiece.getItemMeta().getLore()))
+    , 18);
   }
 
   private boolean isInterfaring(int bound) {

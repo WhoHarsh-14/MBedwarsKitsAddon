@@ -1,10 +1,12 @@
 package me.harsh.mbedwarskitsaddon;
 
 import de.marcely.bedwars.api.BedwarsAPI;
+import de.marcely.bedwars.api.GameAPI;
 import java.util.Arrays;
 import lombok.Getter;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.KitManager;
+import me.harsh.mbedwarskitsaddon.special.SpecialKitItem;
 import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -31,6 +33,9 @@ public final class MBedwarsKitsPlugin extends JavaPlugin {
 
     addon.registerEvents();
     addon.registerCommands();
+    GameAPI.get().registerLobbyItemHandler(new SpecialKitItem());
+    saveDefaultConfig();
+    new KitConfig(this).loadConfiguration();
     KitManager.getInstance().loadKits();
 
     final PluginDescriptionFile pdf = this.getDescription();

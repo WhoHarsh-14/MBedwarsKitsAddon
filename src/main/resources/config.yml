@@ -7,6 +7,8 @@ Features:
   Game_server: false
   # Enables per kit perms kitsaddon.<id>
   Per_kit_perm: false
+  # decreasing it significantly may cause troubles with other plugins (in seconds)
+  Give_kit_delay: 5
   Blocked_arenas: []
 Menu:
   Title: "&a&lK&c&lI&6&lT&7s"
@@ -23,3 +25,11 @@ Messages:
   Kit_given: ["&aYou got %kit_name% kit!"]
   Command_invalid: ["&c&lINVALID &ccommand usage!"]
   Command_invalid_material: ["&c&lINVALID &cPlease use existing material name."]
+  # Returns on /kit
+  Command_help:
+    - ""
+    - " &6&lMBedwars Kits Addon by Harshu"
+    - ""
+    - "  &7Allows you to create and use custom kits in"
+    - "  &7Bedwars, you can also use the following commands:-"
+    - "[COMMAND GUIDE HERE]"

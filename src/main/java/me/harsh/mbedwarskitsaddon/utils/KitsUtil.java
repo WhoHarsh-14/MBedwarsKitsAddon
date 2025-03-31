@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 @UtilityClass
 public class KitsUtil {
 
-  public String KIT_CURRENT_PATH = "kits.selected";
+  public String KIT_CURRENT_PATH = "kits_selected";
 
   public void log(String message, boolean warn){
     if (warn)
@@ -64,6 +64,34 @@ public class KitsUtil {
     if (type == ArmourType.LEGGINGS && !(itemStack.getType().name().endsWith("LEGGINGS")))
       return false;
     return type != ArmourType.BOOTS || itemStack.getType().name().endsWith("BOOTS");
+  }
+
+  public boolean isArmour(ItemStack item){
+    final String name = item.getType().name();
+    return name.endsWith("HELMET") || name.endsWith("CHESTPLATE") || name.endsWith("LEGGINGS") || name.endsWith("BOOTS");
+  }
+
+  public String getFormattedMaterialName(ItemStack item) {
+    if (item == null) return "null";
+    String name = item.getType().toString();
+
+    name = name.replace('_', ' ');
+
+    String[] words = name.split(" ");
+    StringBuilder result = new StringBuilder();
+
+    for (int i = 0; i < words.length; i++) {
+      if (!words[i].isEmpty()) {
+        result.append(words[i].substring(0, 1).toUpperCase())
+            .append(words[i].substring(1).toLowerCase());
+
+        if (i < words.length - 1) {
+          result.append(" ");
+        }
+      }
+    }
+
+    return result.toString();
   }
 
   public ArmourType getArmourType(ItemStack item){

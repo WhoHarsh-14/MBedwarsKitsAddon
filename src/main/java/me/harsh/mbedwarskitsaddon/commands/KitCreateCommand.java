@@ -38,6 +38,7 @@ public class KitCreateCommand extends SubCommand {
       KitsUtil.tell(player, KitConfig.getMessagesMap().get("Command_invalid_material"));
       return;
     }
+    System.out.println(mat.name());
     final ItemStack icon = new ItemStack(mat);
     final ItemMeta iconMeta = icon.getItemMeta();
     iconMeta.setDisplayName(KitsUtil.colorize(name));

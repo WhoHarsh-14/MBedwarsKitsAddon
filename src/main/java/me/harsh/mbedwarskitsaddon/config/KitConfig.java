@@ -22,6 +22,7 @@ public class KitConfig {
   public static boolean ENABLED;
   public static boolean GAME_SERVER;
   public static boolean PER_KIT_PERM;
+  public static int GIVE_KIT_DELAY;
   public static List<String> BLOCKED_ARENAS;
 
   // MENU
@@ -31,7 +32,6 @@ public class KitConfig {
 
   public KitConfig(MBedwarsKitsPlugin plugin) {
     config = plugin.getConfig();
-    plugin.saveDefaultConfig();
   }
 
   public void loadConfiguration() {
@@ -45,6 +45,7 @@ public class KitConfig {
       ENABLED = features.getBoolean("Enabled");
       GAME_SERVER = features.getBoolean("Game_server");
       PER_KIT_PERM = features.getBoolean("Per_kit_perm");
+      GIVE_KIT_DELAY = features.getInt("Give_kit_delay");
       BLOCKED_ARENAS = features.getStringList("Blocked_arenas");
     }
 

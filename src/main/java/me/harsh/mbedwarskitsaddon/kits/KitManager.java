@@ -31,11 +31,11 @@ public class KitManager {
           .filter(s -> s.endsWith("name"))
           .collect(Collectors.toList());
 
-      // Kits.<id>.name
+
       for (String key : nameKits) {
-        final String id = key.split("\\.")[1];
+        final String id = key.split("_")[1];
         final String name = playerProperties.get(key).orElse("[Error parsing name]");
-        final ItemStack icon = playerProperties.getItemStack("kits." + id + ".icon").orElse(null);
+        final ItemStack icon = playerProperties.getItemStack("kits_" + id + "_icon").orElse(null);
 
         if (loadedKits.containsKey(id))
           continue;
@@ -48,7 +48,7 @@ public class KitManager {
             .stream()
             .filter(s -> s.contains("items"))
             .filter(s -> s.contains(id))
-            .forEach(s -> itemStacks.put(playerProperties.getInt(s + ".index").orElse(-1), playerProperties.getItemStack(s).orElse(null)));
+            .forEach(s -> itemStacks.put(playerProperties.getInt(s + "_index").orElse(-1), playerProperties.getItemStack(s).orElse(null)));
         playerProperties.getStoredKeys()
             .stream()
             .filter(s -> s.contains("armour"))
@@ -78,7 +78,7 @@ public class KitManager {
 
       // There is a change in kits perhaps
       for (Kit value : this.getLoadedKits().values()) {
-        final String path = "kits." + value.getId() + ".";
+        final String path = "kits_" + value.getId() + "_";
         // Kit is present already.
         if (playerProperties.get(path + "name")
             .orElse("")
@@ -89,11 +89,11 @@ public class KitManager {
         playerProperties.set(path + "name", value.getName());
         playerProperties.set(path + "icon", value.getIcon());
         value.getItems().forEach((integer, itemStack) -> {
-          playerProperties.set(path + "items." + itemStack.getItemMeta().getDisplayName(), itemStack);
-          playerProperties.set(path + "items." + itemStack.getItemMeta().getDisplayName() + ".index", integer);
+          playerProperties.set(path + "items_" + itemStack.getItemMeta().getDisplayName(), itemStack);
+          playerProperties.set(path + "items_" + itemStack.getItemMeta().getDisplayName() + "_index", integer);
         });
 //        value.getItems().forEach(itemStack -> playerProperties.set(path + "items." + itemStack.getItemMeta().getDisplayName(), itemStack));
-        value.getArmour().forEach(itemStack -> playerProperties.set(path + "armour." + itemStack.getItemMeta().getDisplayName(), itemStack));
+        value.getArmour().forEach(itemStack -> playerProperties.set(path + "armour_" + itemStack.getItemMeta().getDisplayName(), itemStack));
 
 
       }
@@ -120,17 +120,17 @@ public class KitManager {
   // Have to manually remove from player data
   public void removeKit(String kitId) {
     final Kit kit = getLoadedKits().get(kitId);
-    final String path = "kits." + kit.getId() + ".";
+    final String path = "kits_" + kit.getId() + "_";
     this.getLoadedKits().remove(kit.getId());
     BedwarsAPI.getPlayerDataAPI().getProperties(new UUID(0, 0), playerProperties -> {
       playerProperties.remove(path + "name");
       playerProperties.remove(path + "icon");
       kit.getItems().forEach((integer, itemStack) -> {
-        playerProperties.remove(path + "items." + itemStack.getItemMeta().getDisplayName());
-        playerProperties.remove(path + "items." + itemStack.getItemMeta().getDisplayName() + ".index");
+        playerProperties.remove(path + "items_" + itemStack.getItemMeta().getDisplayName());
+        playerProperties.remove(path + "items_" + itemStack.getItemMeta().getDisplayName() + "_index");
       });
 //      kit.getItems().forEach(itemStack -> playerProperties.remove(path + "items." + itemStack.getItemMeta().getDisplayName()));
-      kit.getArmour().forEach(itemStack -> playerProperties.remove(path + "armour." + itemStack.getItemMeta().getDisplayName()));
+      kit.getArmour().forEach(itemStack -> playerProperties.remove(path + "armour_" + itemStack.getItemMeta().getDisplayName()));
     });
   }
 

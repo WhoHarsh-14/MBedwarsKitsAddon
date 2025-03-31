@@ -7,6 +7,7 @@ import de.marcely.bedwars.tools.gui.GUIItem;
 import de.marcely.bedwars.tools.gui.type.ChestGUI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
@@ -90,32 +91,28 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       return;
     final Player player = (Player) event.getWhoClicked();
     final Inventory inventory = event.getClickedInventory();
+    if (inventory == null)
+      return;
     if (!inventory.equals(player.getInventory()))
       return;
     if (getPlayers().contains(player)) {
       // Player is in our AddKitMenu
       final ItemStack item = event.getCurrentItem();
-      if (item == null || item.getType() == Material.AIR || !isNotArmour(item.getType()))
+      if (item == null || item.getType() == Material.AIR || isNotArmour(item.getType()))
         return;
-      for (int i = 0; i < 9; i++) {
-        if (item.equals(inventory.getItem(i))) {
-          // Add item to hotbar
-          setItem(createItem(player, item.getType().name(), () -> {
-              },
-              Message.build(item.getItemMeta().getDisplayName()),
-              Message.build(item.getItemMeta().getLore())), i);
-          return;
-        }
-      }
 
-      final int index = getIndexFromItemStack(item, inventory);
       final GUIItem guiItem = createItem(player, item.getType().name(), () -> {
           },
-          Message.build(item.getItemMeta().getDisplayName()),
-          Message.build(item.getItemMeta().getLore()));
-      if (index == -1)
+          Message.build(
+              item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName(): KitsUtil.getFormattedMaterialName(item)
+          ),
+          Message.build(
+              item.getItemMeta().getLore() == null ? Collections.emptyList(): item.getItemMeta().getLore()
+          ));
+
+      if (event.getSlot() > 8)
         addItem(guiItem);
-      else setItem(guiItem, index);
+      else setItem(guiItem, event.getSlot());
     }
   }
 
@@ -181,8 +178,13 @@ public class KitCreateMenu extends ChestGUI implements Listener {
     kit.addArmour(armourPiece);
     setItem(createItem(player, armourPiece.getType().name(), () -> {
         }
-        , Message.build(armourPiece.getItemMeta().getDisplayName()), Message.build(armourPiece.getItemMeta().getLore())
-    ), 18);
+        , Message.build(
+            armourPiece.getItemMeta().hasDisplayName() ? armourPiece.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(armourPiece)
+        ),
+        Message.build(
+            armourPiece.getItemMeta().getLore()==null ? Collections.emptyList() : armourPiece.getItemMeta().getLore()
+        )
+    ), getArmourIndex(armourPiece));
   }
 
   private boolean isInterfaring(int bound) {
@@ -201,6 +203,23 @@ public class KitCreateMenu extends ChestGUI implements Listener {
         continue;
       if (x.equals(item))
         return i;
+    }
+    return -1;
+  }
+
+  private int getArmourIndex(ItemStack armour){
+    if (!KitsUtil.isArmour(armour))
+      return -1;
+    final ArmourType type = KitsUtil.getArmourType(armour);
+    switch (type){
+      case HELMET:
+        return 18;
+      case CHESTPLATE:
+        return 27;
+      case LEGGINGS:
+        return 36;
+      case BOOTS:
+        return 45;
     }
     return -1;
   }
