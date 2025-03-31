@@ -36,22 +36,17 @@ public class KitMenu extends ChestGUI {
 
   public void draw(Player player){
     // Get the player props
-    final String currentId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
 
     createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
       playerProperties.set(KitsUtil.KIT_CURRENT_PATH, "None");
     }, Message.build("None"), Message.build(""), guiItem -> {
-      updateGUIItem(currentId, guiItem.getItem());
       setItem(guiItem, 0);
     });
 
     for (Kit kit : KitManager.getInstance().getLoadedKits().values()) {
       createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
         selectKit(kit, player, KitsUtil.KIT_CURRENT_PATH);
-      }, Message.build(kit.getName()), Message.build(""), guiItem -> {
-        updateGUIItem(currentId, guiItem.getItem());
-        addItem(guiItem);
-      });
+      }, Message.build(kit.getName()), Message.build(""), this::addItem);
     }
   }
 
@@ -71,13 +66,27 @@ public class KitMenu extends ChestGUI {
     im.setDisplayName(KitsUtil.colorize(name.done(player, false)));
     im.setLore(loreList);
     is.setItemMeta(im);
-    callback.accept(new GUIItem(is, (g0, g1, g2) -> {
+    final GUIItem item = new GUIItem(is, (g0, g1, g2) -> {
       if (KitConfig.PER_KIT_PERM && !player.hasPermission(permission)) {
         KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_No_permission"));
         return;
       }
       onUse.run();
-    }));
+    });
+    final String currentId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
+    final Kit kit = KitManager.getInstance().getLoadedKits().get(currentId);
+    if (kit == null)
+      return;
+    if (kit.getIcon().equals(item.getItem())) {
+      item.getItem().addEnchantment(Enchantment.ARROW_INFINITE, 1);
+      final ItemMeta meta = item.getItem().getItemMeta();
+      meta.setDisplayName(kit.getName());
+      meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
+      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+      item.getItem().setItemMeta(meta);
+    }
+
+    callback.accept(item);
   }
 
   private void selectKit(Kit kit, Player player, String path) {
@@ -98,18 +107,18 @@ public class KitMenu extends ChestGUI {
   }
 
 
-  private void updateGUIItem(String currentId, ItemStack original) {
-    final Kit kit = KitManager.getInstance().getLoadedKits().get(currentId);
-    if (kit == null)
-      return;
-    if (kit.getIcon().equals(original)) {
-      original.addEnchantment(Enchantment.ARROW_INFINITE, 1);
-      final ItemMeta meta = original.getItemMeta();
-      meta.setDisplayName(kit.getName());
-      meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
-      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-      original.setItemMeta(meta);
-    }
-  }
+//  private void updateGUIItem(String currentId, ItemStack original) {
+//    final Kit kit = KitManager.getInstance().getLoadedKits().get(currentId);
+//    if (kit == null)
+//      return;
+//    if (kit.getIcon().equals(original)) {
+//      original.addEnchantment(Enchantment.ARROW_INFINITE, 1);
+//      final ItemMeta meta = original.getItemMeta();
+//      meta.setDisplayName(kit.getName());
+//      meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
+//      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+//      original.setItemMeta(meta);
+//    }
+//  }
 
 }

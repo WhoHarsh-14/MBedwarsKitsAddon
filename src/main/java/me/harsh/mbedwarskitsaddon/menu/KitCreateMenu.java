@@ -40,6 +40,12 @@ public class KitCreateMenu extends ChestGUI implements Listener {
     for (int i = 9; i <= 17; i++) {
       setItem(getFillerGlass(), i);
     }
+    for (int i = 0; i <= 8; i++) {
+      final GUIItem item = getGrayGlass();
+      item.getItem().setAmount(i+1);
+      setItem(item, i);
+    }
+
     setItem(getRedGlass(), 19);
     setItem(getRedGlass(), 28);
     setItem(getRedGlass(), 37);
@@ -51,9 +57,9 @@ public class KitCreateMenu extends ChestGUI implements Listener {
 
     setItem(createItem(player, "LIME_WOOL", () -> {
       // Load everything from our inv -> kit.
-      for (int i = 0; i < 9; i++) {
+      for (int i = 0; i <= 8; i++) {
         final GUIItem item = getItem(i);
-        if (item == null)
+        if (item == null || item.getItem().getType() == getGrayGlass().getItem().getType())
           continue;
         kit.getItems().put(i, item.getItem());
       }
@@ -78,6 +84,10 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       if (getItem(45) != null && !(getItem(45).equals(getArmourHelmet(player))))
         kit.getArmour().add(getItem(45).getItem());
 
+      System.out.println("Kit has been added with id " + kit.getId() + " and name " + kit.getName());
+      System.out.println("Here is the Items and Armour");
+      System.out.println(kit.getItems().values());
+      System.out.println(kit.getArmour().toString());
       KitManager.getInstance().addKit(kit);
       // Close after everything is complete.
       player.closeInventory();
@@ -87,17 +97,18 @@ public class KitCreateMenu extends ChestGUI implements Listener {
 
   @EventHandler
   public void onClick(InventoryClickEvent event) {
+    // Click on the slot of inventory to place item there.
     if (!(event.getWhoClicked() instanceof Player))
       return;
     final Player player = (Player) event.getWhoClicked();
     final Inventory inventory = event.getClickedInventory();
     if (inventory == null)
       return;
-    if (!inventory.equals(player.getInventory()))
+    if (!inventory.equals(player.getOpenInventory().getTopInventory()))
       return;
     if (getPlayers().contains(player)) {
       // Player is in our AddKitMenu
-      final ItemStack item = event.getCurrentItem();
+      final ItemStack item = event.getCursor();
       if (item == null || item.getType() == Material.AIR || isNotArmour(item.getType()))
         return;
 
@@ -144,6 +155,10 @@ public class KitCreateMenu extends ChestGUI implements Listener {
 
   private GUIItem getRedGlass() {
     return createItem(null, "RED_STAINED_GLASS_PANE", () -> {
+    }, Message.build(" "), Message.build(" "));
+  }
+  private GUIItem getGrayGlass() {
+    return createItem(null, "WHITE_STAINED_GLASS_PANE", () -> {
     }, Message.build(""), Message.build(""));
   }
 

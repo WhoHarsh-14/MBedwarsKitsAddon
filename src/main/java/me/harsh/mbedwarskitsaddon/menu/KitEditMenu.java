@@ -122,22 +122,30 @@ public class KitEditMenu extends ChestGUI implements Listener {
 
   @EventHandler
   public void onClick(InventoryClickEvent event) {
+    // Click on the slot of inventory to place item there.
     if (!(event.getWhoClicked() instanceof Player))
       return;
     final Player player = (Player) event.getWhoClicked();
     final Inventory inventory = event.getClickedInventory();
-    if (!inventory.equals(player.getInventory()))
+    if (inventory == null)
+      return;
+    if (!inventory.equals(player.getOpenInventory().getTopInventory()))
       return;
     if (getPlayers().contains(player)) {
-      // Player is in our EditKitMenu
-      final ItemStack item = event.getCurrentItem();
-      if (item == null || item.getType() == Material.AIR || !isNotArmour(item.getType()))
+      // Player is in our AddKitMenu
+      final ItemStack item = event.getCursor();
+      if (item == null || item.getType() == Material.AIR || isNotArmour(item.getType()))
         return;
 
       final GUIItem guiItem = createItem(player, item.getType().name(), () -> {
           },
-          Message.build(item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(item)),
-          Message.build(item.getItemMeta().getLore()==null ? Collections.emptyList() : item.getItemMeta().getLore()));
+          Message.build(
+              item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName(): KitsUtil.getFormattedMaterialName(item)
+          ),
+          Message.build(
+              item.getItemMeta().getLore() == null ? Collections.emptyList(): item.getItemMeta().getLore()
+          ));
+
       if (event.getSlot() > 8)
         addItem(guiItem);
       else setItem(guiItem, event.getSlot());

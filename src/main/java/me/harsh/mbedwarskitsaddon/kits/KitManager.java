@@ -40,26 +40,40 @@ public class KitManager {
         if (loadedKits.containsKey(id))
           continue;
 
-        // Loading Items.
+        // Loading maps/set
         final Map<Integer, ItemStack> itemStacks = new HashMap<>();
         final Set<ItemStack> armours = new HashSet<>();
-        // kits.<id>.Items.item1/item2/....
-        playerProperties.getStoredKeys()
-            .stream()
-            .filter(s -> s.contains("items"))
-            .filter(s -> s.contains(id))
-            .forEach(s -> itemStacks.put(playerProperties.getInt(s + "_index").orElse(-1), playerProperties.getItemStack(s).orElse(null)));
-        playerProperties.getStoredKeys()
-            .stream()
-            .filter(s -> s.contains("armour"))
-            .filter(s -> s.contains(id))
-            .forEach(s -> armours.add(playerProperties.getItemStack(s).orElse(null)));
 
-        // finally load it into the map
+        List<String> itemKeys = playerProperties.getStoredKeys()
+            .stream()
+            .filter(s -> s.startsWith("kits_" + id + "_items_"))
+            .filter(s -> !s.endsWith("_index"))
+            .collect(Collectors.toList());
+
+
+        for (String itemKey : itemKeys) {
+          ItemStack item = playerProperties.getItemStack(itemKey).orElse(null);
+          int index = playerProperties.getInt(itemKey + "_index").orElse(-1);
+
+          if (item != null && index >= 0) {
+            itemStacks.put(index, item);
+          }
+        }
+
+        List<String> armorKeys = playerProperties.getStoredKeys()
+            .stream()
+            .filter(s -> s.startsWith("kits_" + id + "_armour_"))
+            .collect(Collectors.toList());
+
+        for (String armorKey : armorKeys) {
+          ItemStack armor = playerProperties.getItemStack(armorKey).orElse(null);
+          if (armor != null) {
+            armours.add(armor);
+          }
+        }
+
         loadedKits.put(id, new Kit(id, name, icon, itemStacks, armours));
       }
-
-
     });
   }
 
@@ -88,12 +102,25 @@ public class KitManager {
         // Saves the new kit.
         playerProperties.set(path + "name", value.getName());
         playerProperties.set(path + "icon", value.getIcon());
+        System.out.println(value.getItems().values());
         value.getItems().forEach((integer, itemStack) -> {
-          playerProperties.set(path + "items_" + itemStack.getItemMeta().getDisplayName(), itemStack);
-          playerProperties.set(path + "items_" + itemStack.getItemMeta().getDisplayName() + "_index", integer);
+          // NO DEBUG MSG HERE
+          System.out.println("Saving item at index " + integer);
+          System.out.println("Item is " + itemStack);
+          System.out.println("Display name " + itemStack.getItemMeta().getDisplayName());
+
+          playerProperties.set(path + "items_" +
+                  (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : itemStack.getType().name())
+              , itemStack);
+          playerProperties.set(path + "items_" +
+              (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : itemStack.getType().name())
+              + "_index", integer);
         });
-//        value.getItems().forEach(itemStack -> playerProperties.set(path + "items." + itemStack.getItemMeta().getDisplayName(), itemStack));
-        value.getArmour().forEach(itemStack -> playerProperties.set(path + "armour_" + itemStack.getItemMeta().getDisplayName(), itemStack));
+
+
+        value.getArmour().forEach(itemStack -> playerProperties.set(path + "armour_" +
+                (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : itemStack.getType().name())
+            , itemStack));
 
 
       }
@@ -126,11 +153,14 @@ public class KitManager {
       playerProperties.remove(path + "name");
       playerProperties.remove(path + "icon");
       kit.getItems().forEach((integer, itemStack) -> {
-        playerProperties.remove(path + "items_" + itemStack.getItemMeta().getDisplayName());
-        playerProperties.remove(path + "items_" + itemStack.getItemMeta().getDisplayName() + "_index");
+        playerProperties.remove(path + "items_" +
+            (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : itemStack.getType().name()));
+        playerProperties.remove(path + "items_" +
+            (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : itemStack.getType().name()) + "_index");
       });
 //      kit.getItems().forEach(itemStack -> playerProperties.remove(path + "items." + itemStack.getItemMeta().getDisplayName()));
-      kit.getArmour().forEach(itemStack -> playerProperties.remove(path + "armour_" + itemStack.getItemMeta().getDisplayName()));
+      kit.getArmour().forEach(itemStack -> playerProperties.remove(path + "armour_" +
+          (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName() : itemStack.getType().name())));
     });
   }
 

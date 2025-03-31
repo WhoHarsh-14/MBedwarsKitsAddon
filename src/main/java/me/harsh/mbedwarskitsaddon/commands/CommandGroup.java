@@ -2,7 +2,9 @@ package me.harsh.mbedwarskitsaddon.commands;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
+import me.harsh.mbedwarskitsaddon.kits.KitManager;
 import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -50,6 +52,9 @@ public class CommandGroup implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
         final List<String> tab = new ArrayList<>();
+        if (strings[0].equalsIgnoreCase("remove") && strings.length == 2){
+            return new ArrayList<>(KitManager.getInstance().getLoadedKits().keySet());
+        }
         switch (strings.length){
             case 1:
                 tab.addAll(getCommandList());
