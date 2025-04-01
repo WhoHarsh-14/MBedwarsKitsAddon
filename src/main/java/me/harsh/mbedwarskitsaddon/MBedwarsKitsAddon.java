@@ -6,6 +6,7 @@ import me.harsh.mbedwarskitsaddon.commands.CommandGroup;
 import me.harsh.mbedwarskitsaddon.commands.KitCreateCommand;
 import me.harsh.mbedwarskitsaddon.commands.KitEditCommand;
 import me.harsh.mbedwarskitsaddon.commands.KitLoadCommand;
+import me.harsh.mbedwarskitsaddon.commands.KitMenuCommand;
 import me.harsh.mbedwarskitsaddon.commands.KitRemoveCommand;
 import me.harsh.mbedwarskitsaddon.commands.KitUnLoadCommand;
 import me.harsh.mbedwarskitsaddon.listener.PlayerListener;
@@ -36,7 +37,8 @@ public class MBedwarsKitsAddon extends BedwarsAddon {
         new KitRemoveCommand(),
         new KitEditCommand(),
         new KitUnLoadCommand(),
-        new KitLoadCommand()
+        new KitLoadCommand(),
+        new KitMenuCommand()
     )));
   }
 

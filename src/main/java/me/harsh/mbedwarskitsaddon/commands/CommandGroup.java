@@ -54,18 +54,26 @@ public class CommandGroup implements CommandExecutor, TabCompleter {
         if ((strings[0].equalsIgnoreCase("remove") || strings[0].equalsIgnoreCase("edit"))&& strings.length == 2){
             return new ArrayList<>(KitManager.getInstance().getLoadedKits().keySet());
         }
-        switch (strings.length){
-            case 1:
-                tab.addAll(getCommandList());
+        switch (strings[0]){
+            case "remove":
+            case "edit":
+                if (strings.length == 2)
+                    return new ArrayList<>(KitManager.getInstance().getLoadedKits().keySet());
                 break;
-            case 2:
-                tab.add("<id>");
-                break;
-            case 3:
-                tab.add("<name>");
-                break;
-            case 4:
-                tab.addAll(materialList());
+            default:
+                switch (strings.length){
+                    case 1:
+                        tab.addAll(getCommandList());
+                        break;
+                    case 2:
+                        tab.add("<id>");
+                        break;
+                    case 3:
+                        tab.add("<name>");
+                        break;
+                    case 4:
+                        tab.addAll(materialList());
+                }
         }
         return tab;
     }
