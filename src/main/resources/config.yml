@@ -3,13 +3,16 @@ Prefix: "&c&lK&a&lI&e&lT &7>"
 
 Features:
   Enabled: true
-  # Set it to true on the server with bungee/proxy sync (It won't save kits from there)
+  # Set it to true on every backend server with bungee/proxy sync (It won't save kits from there)
+  # Only set it to false on the main hub server/s
   Game_server: false
   # Enables per kit perms kitsaddon.<id>
   Per_kit_perm: false
   # decreasing it significantly may cause troubles with other plugins (in seconds)
   Give_kit_delay: 5
-  Blocked_arenas: []
+  Blocked_arenas: ["YouFavBlockedArena"]
+
+# Currently menu is limited to one page only.
 Menu:
   Title: "&a&lK&c&lI&6&lT&7s"
 # Messages
@@ -20,6 +23,7 @@ Messages:
   Kit_already_selected: ["&c&lSorry %player_name%! &7you have already selected %kit_name%."]
   Kit_already_exists: ["&c&lSorry %player_name%! &7%kit_name% kit already exists with that id."]
   Kit_does_not_exists: ["&c&lSorry %player_name%! &7%kit_name% does not exists with that id."]
+  Kit_created: ["&a&lYAY! &7%kit_name% with the id %kit_id% has been created!!."]
   Kit_removed: ["&a&lYAY! &7%kit_name% with the id %kit_id% has been removed."]
   Kit_selected: ["&a&lYay %player_name%! &7You have now selected %kit_name% kit."]
   Kit_given: ["&aYou got %kit_name% kit!"]

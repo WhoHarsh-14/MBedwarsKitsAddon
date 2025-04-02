@@ -25,6 +25,7 @@ public class KitManager {
   @Getter
   private static final KitManager instance = new KitManager();
   private final Map<String, Kit> loadedKits = new HashMap<>();
+  private final Map<UUID, String> playerCurrentKits = new HashMap<>();
   private final String DIRECTORY = "plugins/MBedwars/add-ons/MBedwarsKitsAddon/kits.yml";
 
   private KitManager() {

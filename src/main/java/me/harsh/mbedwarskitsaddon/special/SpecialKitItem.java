@@ -4,7 +4,6 @@ import de.marcely.bedwars.api.arena.Arena;
 import de.marcely.bedwars.api.game.lobby.LobbyItem;
 import de.marcely.bedwars.api.game.lobby.LobbyItemHandler;
 
-import de.marcely.bedwars.api.player.PlayerDataAPI;
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.menu.KitMenu;
@@ -18,11 +17,9 @@ public class SpecialKitItem extends LobbyItemHandler {
 
   @Override
   public void handleUse(Player player, Arena arena, LobbyItem lobbyItem) {
-    PlayerDataAPI.get().getProperties(player.getUniqueId(), playerProperties -> {
-      final KitMenu menu = new KitMenu(playerProperties);
-      menu.draw(player);
-      menu.open(player);
-    });
+    final KitMenu menu = new KitMenu();
+    menu.draw(player);
+    menu.open(player);
   }
 
   @Override

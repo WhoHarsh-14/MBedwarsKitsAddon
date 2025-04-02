@@ -24,11 +24,9 @@ public class KitMenuCommand extends SubCommand {
     }
 
     // Open the menu
-    PlayerDataAPI.get().getProperties(player.getUniqueId(), playerProperties -> {
-      final KitMenu menu = new KitMenu(playerProperties);
-      menu.draw(player);
-      menu.open(player);
-    });
+    final KitMenu menu = new KitMenu();
+    menu.draw(player);
+    menu.open(player);
   }
 
 }

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
 import me.harsh.mbedwarskitsaddon.kits.KitManager;
 import me.harsh.mbedwarskitsaddon.utils.ArmourType;
@@ -60,7 +61,6 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       for (int i = 0; i <= 8; i++) {
         final GUIItem item = getItem(i);
         if (item == null || item.getItem().getType() == getGrayGlass().getItem().getType()) {
-//          System.out.println("Item is null at index " + i);
           continue;
         }
         kit.getItems().put(i, item.getItem());
@@ -89,6 +89,7 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       KitManager.getInstance().addKit(kit);
       // Close after everything is complete.
       player.closeInventory();
+      KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_created"), kit);
     }, Message.build("&a&lConfirm"), Message.build("&7If the setup is complete", "&7Click this button.")), 53);
 
   }

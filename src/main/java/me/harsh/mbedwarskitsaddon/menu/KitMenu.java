@@ -1,7 +1,6 @@
 package me.harsh.mbedwarskitsaddon.menu;
 
 import de.marcely.bedwars.api.message.Message;
-import de.marcely.bedwars.api.player.PlayerProperties;
 import de.marcely.bedwars.tools.Helper;
 import de.marcely.bedwars.tools.NMSHelper;
 import de.marcely.bedwars.tools.gui.GUIItem;
@@ -10,7 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
@@ -26,20 +26,20 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class KitMenu extends ChestGUI {
 
-  private final PlayerProperties playerProperties;
+  private final KitManager manager = KitManager.getInstance();
 
-  public KitMenu(PlayerProperties playerProperties) {
+  public KitMenu() {
     super(6, KitsUtil.colorize(KitConfig.KIT_MENU_TITLE));
-    this.playerProperties = playerProperties;
   }
 
 
   public void draw(Player player){
-    // Get the player props
-
-    System.out.println("Drawing Menu....");
     createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
-      playerProperties.set(KitsUtil.KIT_CURRENT_PATH, "None");
+      if (manager.getPlayerCurrentKits().containsKey(player.getUniqueId()))
+        manager.getPlayerCurrentKits().replace(player.getUniqueId(), "None");
+      else manager.getPlayerCurrentKits().put(player.getUniqueId(), "None");
+
+      draw(player);
     }, Message.build("None"), Message.build(""), guiItem -> {
       setItem(guiItem, 0);
     });
@@ -50,7 +50,8 @@ public class KitMenu extends ChestGUI {
           KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_No_permission"), kit);
           return;
         }
-        selectKit(kit, player, KitsUtil.KIT_CURRENT_PATH);
+        selectKit(kit, player);
+        draw(player);
       }, Message.build(kit.getName()), Message.build(""), this::addItem);
     }
   }
@@ -78,10 +79,11 @@ public class KitMenu extends ChestGUI {
       }
       onUse.run();
     });
-    final String currentId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
+    final String currentId = KitManager.getInstance().getPlayerCurrentKits().get(player.getUniqueId());
     final Kit kit = KitManager.getInstance().getLoadedKits().get(currentId);
     if (kit == null){
       if (item.getItem().getType() == Helper.get().getMaterialByName("WHITE_STAINED_GLASS_PANE")){
+        item.getItem().addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
         final ItemMeta meta = item.getItem().getItemMeta();
         meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
         item.getItem().setItemMeta(meta);
@@ -89,8 +91,11 @@ public class KitMenu extends ChestGUI {
       callback.accept(item);
       return;
     }
-    if (kit.getIcon().equals(item.getItem())) {
-      item.getItem().addEnchantment(Enchantment.KNOCKBACK, 1);
+
+    if (kit.getIcon().getItemMeta().getDisplayName().equalsIgnoreCase(item.getItem().getItemMeta().getDisplayName())) {
+      if (item.getItem().getType() == Helper.get().getMaterialByName("BOW"))
+        item.getItem().addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
+      else item.getItem().addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
       final ItemMeta meta = item.getItem().getItemMeta();
       meta.setDisplayName(kit.getName());
       meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
@@ -101,36 +106,22 @@ public class KitMenu extends ChestGUI {
     callback.accept(item);
   }
 
-  private void selectKit(Kit kit, Player player, String path) {
-    final Optional<String> currentKit = playerProperties.get(path);
+  private void selectKit(Kit kit, Player player) {
+    final Map<UUID,String> playerKitMap = KitManager.getInstance().getPlayerCurrentKits();
 
-    if (!currentKit.isPresent()) {
-      playerProperties.set(path, kit.getIcon());
+    if (!playerKitMap.containsKey(player.getUniqueId())) {
+      playerKitMap.put(player.getUniqueId(), kit.getId());
       KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_selected"), kit);
       return;
     }
 
-    if (currentKit.get().equalsIgnoreCase(kit.getId())) {
+    if (playerKitMap.get(player.getUniqueId()).equalsIgnoreCase(kit.getId())) {
       KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_already_selected"), kit);
       return;
     }
-    playerProperties.replace(path, kit.getId());
+    playerKitMap.replace(player.getUniqueId(), kit.getId());
     KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_selected"), kit);
   }
 
-
-//  private void updateGUIItem(String currentId, ItemStack original) {
-//    final Kit kit = KitManager.getInstance().getLoadedKits().get(currentId);
-//    if (kit == null)
-//      return;
-//    if (kit.getIcon().equals(original)) {
-//      original.addEnchantment(Enchantment.ARROW_INFINITE, 1);
-//      final ItemMeta meta = original.getItemMeta();
-//      meta.setDisplayName(kit.getName());
-//      meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
-//      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-//      original.setItemMeta(meta);
-//    }
-//  }
 
 }

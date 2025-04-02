@@ -1,14 +1,11 @@
 package me.harsh.mbedwarskitsaddon.utils;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
