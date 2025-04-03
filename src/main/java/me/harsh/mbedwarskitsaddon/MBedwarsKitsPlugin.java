@@ -6,6 +6,7 @@ import java.util.Arrays;
 import lombok.Getter;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.KitManager;
+import me.harsh.mbedwarskitsaddon.placeholders.KitPlaceholders;
 import me.harsh.mbedwarskitsaddon.special.SpecialKitItem;
 import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.Bukkit;
@@ -31,7 +32,6 @@ public final class MBedwarsKitsPlugin extends JavaPlugin {
     if (!registerAddon())
       return;
 
-    addon.registerEvents();
     addon.registerCommands();
     GameAPI.get().registerLobbyItemHandler(new SpecialKitItem());
     saveDefaultConfig();
@@ -58,6 +58,10 @@ public final class MBedwarsKitsPlugin extends JavaPlugin {
       if (!KitConfig.ENABLED)
         addon.unregister();
 
+
+      if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) { //
+        new KitPlaceholders().register();
+      }
 
     });
   }
