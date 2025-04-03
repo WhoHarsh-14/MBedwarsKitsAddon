@@ -5,6 +5,7 @@ import java.util.Arrays;
 import me.harsh.mbedwarskitsaddon.commands.CommandGroup;
 import me.harsh.mbedwarskitsaddon.commands.KitCreateCommand;
 import me.harsh.mbedwarskitsaddon.commands.KitEditCommand;
+import me.harsh.mbedwarskitsaddon.commands.KitIconEditCommand;
 import me.harsh.mbedwarskitsaddon.commands.KitLoadCommand;
 import me.harsh.mbedwarskitsaddon.commands.KitMenuCommand;
 import me.harsh.mbedwarskitsaddon.commands.KitRemoveCommand;
@@ -38,7 +39,8 @@ public class MBedwarsKitsAddon extends BedwarsAddon {
         new KitEditCommand(),
         new KitUnLoadCommand(),
         new KitLoadCommand(),
-        new KitMenuCommand()
+        new KitMenuCommand(),
+        new KitIconEditCommand()
     )));
   }
 

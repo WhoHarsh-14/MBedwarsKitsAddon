@@ -52,7 +52,9 @@ public class KitMenu extends ChestGUI {
         }
         selectKit(kit, player);
         draw(player);
-      }, Message.build(kit.getName()), Message.build(""), this::addItem);
+      }, Message.build(kit.getName()), Message.build(
+          kit.getIcon().getItemMeta().getLore() == null ? Collections.singletonList("") : kit.getIcon().getItemMeta().getLore()
+      ), this::addItem);
     }
   }
 
@@ -97,9 +99,12 @@ public class KitMenu extends ChestGUI {
         item.getItem().addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
       else item.getItem().addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
       final ItemMeta meta = item.getItem().getItemMeta();
+      final List<String> customLore = kit.getIcon().getItemMeta().getLore();
+      customLore.add("");
+      customLore.add("&aSelected");
       meta.setDisplayName(kit.getName());
-      meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
       meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+      meta.setLore(customLore);
       item.getItem().setItemMeta(meta);
     }
 
