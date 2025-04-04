@@ -20,105 +20,104 @@ import java.util.List;
 
 public class CommandGroup implements CommandExecutor, TabCompleter {
 
-    final List<SubCommand> subCommands;
-    final String mainCommandGroup;
+  final List<SubCommand> subCommands;
+  final String mainCommandGroup;
 
-    public CommandGroup(String mainCommandGroup, List<SubCommand> subCommands){
-        this.mainCommandGroup = mainCommandGroup;
-        this.subCommands = subCommands;
-    }
+  public CommandGroup(String mainCommandGroup, List<SubCommand> subCommands) {
+    this.mainCommandGroup = mainCommandGroup;
+    this.subCommands = subCommands;
+  }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
-        if (commandSender instanceof Player){
-            final Player player = (Player) commandSender;
-            if (strings.length == 0){
-                KitsUtil.tell(player, KitConfig.getMessagesMap().get("Command_help"));
-                return false;
-            }
-            for (SubCommand subCommand : subCommands) {
-                if (subCommand.getCommand().equalsIgnoreCase(strings[0])){
+  @Override
+  public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
+    if (commandSender instanceof Player) {
+      final Player player = (Player) commandSender;
+      if (strings.length == 0) {
+        KitsUtil.tell(player, KitConfig.getMessagesMap().get("Command_help"));
+        return false;
+      }
+      for (SubCommand subCommand : subCommands) {
+        if (subCommand.getCommand().equalsIgnoreCase(strings[0])) {
 //                    System.out.println("Sub command found! : " + strings[0]);
-                    final String[] args = remove(strings.clone(), 0);
-                    subCommand.onCommand(player,args);
-                }
-            }
+          final String[] args = remove(strings.clone(), 0);
+          subCommand.onCommand(player, args);
         }
-
-        return true;
+      }
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
-        final List<String> tab = new ArrayList<>();
-        if ((strings[0].equalsIgnoreCase("remove") || strings[0].equalsIgnoreCase("edit"))&& strings.length == 2){
-            return new ArrayList<>(KitManager.getInstance().getLoadedKits().keySet());
-        }
-        switch (strings[0]){
-            case "remove":
-            case "edit":
-                if (strings.length == 2)
-                    return new ArrayList<>(KitManager.getInstance().getLoadedKits().keySet());
-                break;
-            default:
-                switch (strings.length){
-                    case 1:
-                        tab.addAll(getCommandList());
-                        break;
-                    case 2:
-                        tab.add("<id>");
-                        break;
-                    case 3:
-                        tab.add("<name>");
-                        break;
-                    case 4:
-                        tab.addAll(materialList());
-                }
-        }
-        return tab;
+    return true;
+  }
+
+  @Override
+  public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] strings) {
+    final List<String> tab = new ArrayList<>();
+    if ((strings[0].equalsIgnoreCase("remove") || strings[0].equalsIgnoreCase("edit")
+    || strings[0].equalsIgnoreCase("icon")) && strings.length == 2) {
+      return new ArrayList<>(KitManager.getInstance().getLoadedKits().keySet());
     }
-
-    public List<String> getCommandList(){
-        final List<String> commands = new ArrayList<>();
-        for (SubCommand subCommand : subCommands) {
-            commands.add(subCommand.getCommand());
+    switch (strings[0]) {
+      case "remove":
+      case "edit":
+        if (strings.length == 2)
+          return new ArrayList<>(KitManager.getInstance().getLoadedKits().keySet());
+        break;
+      case "icon":
+        if (strings.length == 3)
+          return Arrays.asList("description", "item");
+        if (strings.length == 4){
+          if (strings[2].equalsIgnoreCase("description"))
+            return Arrays.asList("Lore1,Lore2,Lore3...");
+          else if (strings[2].equalsIgnoreCase("item")) {
+            return Arrays.asList("hand", "<MATERIAL_NAME>");
+          }
         }
-        return commands;
-    }
-//    public List<String> getSubCommandArgs(int index){
-//        final List<String> commands = new ArrayList<>();
-//        for (SubCommand subCommand : subCommands) {
-//            final String s= subCommand.getTab().get(index);
-//            if (s != null)
-//                commands.add(s);
-//        }
-//        return commands;
-//    }
-
-    private List<String> materialList(){
-        final List<String> mat = new ArrayList<>();
-        for (Material value : Material.values()) {
-            mat.add(value.name());
+        break;
+      default:
+        switch (strings.length) {
+          case 1:
+            tab.addAll(getCommandList());
+            break;
+          case 2:
+            tab.add("<id>");
+            break;
+          case 3:
+            tab.add("<name>");
+            break;
+          case 4:
+            tab.addAll(materialList());
         }
-
-        return mat;
     }
+    return tab;
+  }
 
-    public String getMainCommandGroup() {
-        return mainCommandGroup;
+  public List<String> getCommandList() {
+    final List<String> commands = new ArrayList<>();
+    for (SubCommand subCommand : subCommands) {
+      commands.add(subCommand.getCommand());
     }
+    return commands;
+  }
 
-    public String[] remove(String[] arr, int in) {
-        if (arr == null || in < 0 || in >= arr.length) {
-            return arr;
-        }
-        String[] arr2 = new String[arr.length - 1];
-        for (int i = 0, k = 0; i < arr.length; i++) {
-            if (i == in)
-                continue;
-
-            arr2[k++] = arr[i];
-        }
-        return arr2;
+  private List<String> materialList() {
+    final List<String> mat = new ArrayList<>();
+    for (Material value : Material.values()) {
+      mat.add(value.name());
     }
+    return mat;
+  }
+
+
+  public String[] remove(String[] arr, int in) {
+    if (arr == null || in < 0 || in >= arr.length) {
+      return arr;
+    }
+    String[] arr2 = new String[arr.length - 1];
+    for (int i = 0, k = 0; i < arr.length; i++) {
+      if (i == in)
+        continue;
+
+      arr2[k++] = arr[i];
+    }
+    return arr2;
+  }
 }

@@ -26,7 +26,7 @@ Messages:
   Kit_created: ["&a&lYAY! &7%kit_name% with the id %kit_id% has been created!!."]
   Kit_removed: ["&a&lYAY! &7%kit_name% with the id %kit_id% has been removed."]
   Kit_selected: ["&a&lYay %player_name%! &7You have now selected %kit_name% kit."]
-  Kit_icon_edited: ["&a&lYay %player_name%! &7You have updated the &6%kit_name%&r&7 icon's lore"]
+  Kit_icon_edited: ["&a&lYay %player_name%! &7You have updated the &6%kit_name%."]
   Kit_given: ["&aYou got %kit_name% kit!"]
   Kit_saved: ["&aYou have saved all the loaded kits into &6kits.yml!"]
   Kit_loaded: ["&aYou have loaded all the kits from &6kits.yml!"]

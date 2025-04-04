@@ -39,6 +39,7 @@ public class PlayerListener implements Listener {
       if (!player.isOnline())
         continue;
       final String key = KitManager.getInstance().getPlayerCurrentKits().get(player.getUniqueId());
+
       if (key.equalsIgnoreCase("None")) {
         return;
       }
@@ -71,6 +72,7 @@ public class PlayerListener implements Listener {
       final String kitId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
       if (KitManager.getInstance().getLoadedKits().containsKey(kitId))
         KitManager.getInstance().getPlayerCurrentKits().put(event.getPlayer().getUniqueId(), kitId);
+      else KitManager.getInstance().getPlayerCurrentKits().put(event.getPlayer().getUniqueId(), "None");
     });
   }
 
@@ -89,7 +91,7 @@ public class PlayerListener implements Listener {
   }
 
 
-  private void giveArmour(Set<ItemStack> armour, Player player, Team team){
+  public void giveArmour(Set<ItemStack> armour, Player player, Team team){
     final PlayerInventory inventory = player.getInventory();
     if (inventory == null)
       return;
