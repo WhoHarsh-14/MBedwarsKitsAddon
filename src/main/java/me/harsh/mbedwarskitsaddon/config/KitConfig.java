@@ -23,10 +23,17 @@ public class KitConfig {
   public static boolean GAME_SERVER;
   public static boolean PER_KIT_PERM;
   public static int GIVE_KIT_DELAY;
+  public static boolean GIVE_KIT_ON_RESPAWN;
   public static List<String> BLOCKED_ARENAS;
 
   // MENU
   public static String KIT_MENU_TITLE;
+  public static String KIT_MENU_PLAYER_NAME;
+  public static List<String> KIT_MENU_PLAYER_DESCRIPTION;
+  public static String KIT_MENU_BACK_NAME;
+  public static List<String> KIT_MENU_BACK_DESCRIPTION;
+  public static String KIT_MENU_NEXT_NAME;
+  public static List<String> KIT_MENU_NEXT_DESCRIPTION;
 
 
 
@@ -46,6 +53,7 @@ public class KitConfig {
       GAME_SERVER = features.getBoolean("Game_server");
       PER_KIT_PERM = features.getBoolean("Per_kit_perm");
       GIVE_KIT_DELAY = features.getInt("Give_kit_delay");
+      GIVE_KIT_ON_RESPAWN = features.getBoolean("Give_kit_on_respawn");
       BLOCKED_ARENAS = features.getStringList("Blocked_arenas");
     }
 
@@ -53,6 +61,12 @@ public class KitConfig {
     final ConfigurationSection menu = config.getConfigurationSection("Menu");
     if (menu != null){
       KIT_MENU_TITLE = menu.getString("Title");
+      KIT_MENU_PLAYER_NAME = menu.getString("Player_head.Name");
+      KIT_MENU_PLAYER_DESCRIPTION = menu.getStringList("Player_head.Description");
+      KIT_MENU_BACK_NAME = menu.getString("Previous_page.Name");
+      KIT_MENU_BACK_DESCRIPTION = menu.getStringList("Previous_page.Description");
+      KIT_MENU_NEXT_NAME = menu.getString("Next_page.Name");
+      KIT_MENU_NEXT_DESCRIPTION = menu.getStringList("Next_page.Description");
     }
 
 

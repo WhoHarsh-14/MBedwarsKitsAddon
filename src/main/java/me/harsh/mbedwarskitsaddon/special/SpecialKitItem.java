@@ -18,7 +18,7 @@ public class SpecialKitItem extends LobbyItemHandler {
   @Override
   public void handleUse(Player player, Arena arena, LobbyItem lobbyItem) {
     final KitMenu menu = new KitMenu();
-    menu.draw(player);
+    menu.drawPage(player, 1);
     menu.open(player);
   }
 

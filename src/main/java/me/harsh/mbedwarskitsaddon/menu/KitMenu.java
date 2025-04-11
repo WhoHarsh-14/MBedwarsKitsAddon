@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
 import me.harsh.mbedwarskitsaddon.kits.KitManager;
+import me.harsh.mbedwarskitsaddon.lib.SkullCreator;
 import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
@@ -29,37 +30,110 @@ public class KitMenu extends ChestGUI {
   private final KitManager manager = KitManager.getInstance();
 
   public KitMenu() {
-    super(6, KitsUtil.colorize(KitConfig.KIT_MENU_TITLE));
+    super(6, KitsUtil.colorize(
+        KitConfig.KIT_MENU_TITLE
+            .replace("%page_total%", ""+KitsUtil.getTotalPageNo())
+            .replace("%page_current%", ""+1)
+    ));
   }
 
+  // For every page
+  // BLACK
+  // KITS (4 Rows = 35kits + 1None)
+  // BLACK (Info bar)
+  public void drawPage(Player player, int pageNo) {
+    if (pageNo > KitsUtil.getTotalPageNo())
+      return;
 
-  public void draw(Player player){
+    for (int i = 0; i < 9; i++) {
+      setItem(getBlackFiller(player), i);
+    }
+    for (int i = 45; i < 54; i++) {
+      switch (i) {
+        case 45:
+          // Back
+          createItem(player, "SIGN", "", () -> {
+                if (pageNo == 1)
+                  return;
+                drawPage(player, pageNo - 1);
+                setTitle(KitsUtil.colorize(
+                    KitConfig.KIT_MENU_TITLE
+                        .replace("%page_total%", ""+KitsUtil.getTotalPageNo())
+                        .replace("%page_current%", ""+ (pageNo-1))
+                ));
+              },
+              Message.build(KitsUtil.colorize(KitConfig.KIT_MENU_BACK_NAME)), Message.build(KitsUtil.colorizeList(KitConfig.KIT_MENU_BACK_DESCRIPTION)),
+              guiItem -> {
+
+                if (pageNo == 1)
+                  return;
+                setItem(guiItem, 45);
+              });
+          break;
+        case 53:
+          // Next
+          createItem(player, "SIGN", "", () -> {
+                if (pageNo == KitsUtil.getTotalPageNo())
+                  return;
+                drawPage(player, pageNo + 1);
+                setTitle(KitsUtil.colorize(
+                    KitConfig.KIT_MENU_TITLE
+                        .replace("%page_total%", ""+KitsUtil.getTotalPageNo())
+                        .replace("%page_current%", ""+ (pageNo+1))
+                ));
+              },
+              Message.build(KitsUtil.colorize(KitConfig.KIT_MENU_NEXT_NAME)), Message.build(KitsUtil.colorizeList(KitConfig.KIT_MENU_NEXT_DESCRIPTION)),
+              guiItem -> {
+
+                if (pageNo == KitsUtil.getTotalPageNo())
+                  return;
+                setItem(guiItem, 53);
+
+              });
+          break;
+        case 49:
+          // Head
+          setItem(getPlayerHead(player), i);
+          break;
+        default:
+          setItem(getBlackFiller(player), i);
+
+      }
+    }
+
+
     createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
       if (manager.getPlayerCurrentKits().containsKey(player.getUniqueId()))
         manager.getPlayerCurrentKits().replace(player.getUniqueId(), "None");
       else manager.getPlayerCurrentKits().put(player.getUniqueId(), "None");
 
       clear();
-      draw(player);
+      drawPage(player, pageNo);
     }, Message.build("None"), Message.build(""), guiItem -> {
-      setItem(guiItem, 0);
+      setItem(guiItem, 9);
     });
 
-    for (Kit kit : KitManager.getInstance().getLoadedKits().values()) {
+    final Kit[] kits = KitManager.getInstance().getLoadedKits().values().toArray(new Kit[0]);
+    for (int i = 35 * (pageNo - 1); i < 35 * pageNo; i++) {
+      final Kit kit = kits[i];
+
+      if (kit == null)
+        return;
+
       createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
-        if (!player.hasPermission(kit.getPermission())){
+        if (!player.hasPermission(kit.getPermission())) {
           KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_No_permission"), kit);
           return;
         }
         selectKit(kit, player);
         clear();
-        draw(player);
+        drawPage(player, pageNo);
       }, Message.build(kit.getName()), Message.build(
           kit.getIcon().getItemMeta().getLore() == null ? Collections.singletonList("") : kit.getIcon().getItemMeta().getLore()
       ), this::addItem);
+
     }
   }
-
 
 
   private void createItem(Player player, String materialName, String permission, Runnable onUse, Message name, Message lore, Consumer<GUIItem> callback) {
@@ -85,8 +159,8 @@ public class KitMenu extends ChestGUI {
     });
     final String currentId = KitManager.getInstance().getPlayerCurrentKits().get(player.getUniqueId());
     final Kit kit = KitManager.getInstance().getLoadedKits().get(currentId);
-    if (kit == null){
-      if (item.getItem().getType() == Helper.get().getMaterialByName("WHITE_STAINED_GLASS_PANE")){
+    if (kit == null) {
+      if (item.getItem().getType() == Helper.get().getMaterialByName("WHITE_STAINED_GLASS_PANE")) {
         item.getItem().addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
         final ItemMeta meta = item.getItem().getItemMeta();
         meta.setLore(Collections.singletonList(KitsUtil.colorize("&aSelected")));
@@ -115,8 +189,59 @@ public class KitMenu extends ChestGUI {
     callback.accept(item);
   }
 
+  private GUIItem createItemDev(Player player, String materialName, Runnable onUse, Message name, Message lore) {
+    ItemStack is = NMSHelper.get().hideAttributes(Helper.get().parseItemStack(materialName));
+
+    final ItemMeta im = is.getItemMeta();
+    final List<String> loreList = new ArrayList<>();
+
+    loreList.add("");
+    loreList.addAll(Arrays.stream(lore.done(player).split("\\\\n"))
+        .map(l -> ChatColor.GRAY + l)
+        .collect(Collectors.toList()));
+
+    im.setDisplayName(KitsUtil.colorize(name.done(player, false)));
+    im.setLore(loreList);
+    is.setItemMeta(im);
+
+    return new GUIItem(is, (g0, g1, g2) -> {
+      onUse.run();
+    });
+  }
+
+  private GUIItem createSkull(Player player, ItemStack is, Runnable onUse, Message name, Message lore) {
+    final ItemMeta im = is.getItemMeta();
+    final List<String> loreList = new ArrayList<>();
+
+    loreList.add("");
+    loreList.addAll(Arrays.stream(lore.done(player).split("\\\\n"))
+        .map(l -> ChatColor.GRAY + l)
+        .collect(Collectors.toList()));
+
+    im.setDisplayName(KitsUtil.colorize(name.done(player, false)));
+    im.setLore(loreList);
+    is.setItemMeta(im);
+
+    return new GUIItem(is, (g0, g1, g2) -> {
+      onUse.run();
+    });
+  }
+
+  private GUIItem getBlackFiller(Player player) {
+    return createItemDev(player, "BLACK_STAINED_GLASS_PANE", () -> {
+        },
+        Message.build(" "), Message.build(" "));
+  }
+
+  private GUIItem getPlayerHead(Player player) {
+    final ItemStack skull = SkullCreator.itemFromUuid(player.getUniqueId());
+    return createSkull(player, skull, () -> {
+    }, Message.build(KitsUtil.colorize(KitConfig.KIT_MENU_PLAYER_NAME)), Message.build(KitsUtil.colorizeList(KitConfig.KIT_MENU_PLAYER_DESCRIPTION)));
+  }
+
+
   private void selectKit(Kit kit, Player player) {
-    final Map<UUID,String> playerKitMap = KitManager.getInstance().getPlayerCurrentKits();
+    final Map<UUID, String> playerKitMap = KitManager.getInstance().getPlayerCurrentKits();
 
     if (!playerKitMap.containsKey(player.getUniqueId())) {
       playerKitMap.put(player.getUniqueId(), kit.getId());
@@ -132,5 +257,34 @@ public class KitMenu extends ChestGUI {
     KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_selected"), kit);
   }
 
+
+
+//  !- OLD METHOD WITHOUT PAGES -!
+//  public void draw(Player player) {
+//    createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
+//      if (manager.getPlayerCurrentKits().containsKey(player.getUniqueId()))
+//        manager.getPlayerCurrentKits().replace(player.getUniqueId(), "None");
+//      else manager.getPlayerCurrentKits().put(player.getUniqueId(), "None");
+//
+//      clear();
+//      draw(player);
+//    }, Message.build("None"), Message.build(""), guiItem -> {
+//      setItem(guiItem, 0);
+//    });
+//
+//    for (Kit kit : KitManager.getInstance().getLoadedKits().values()) {
+//      createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
+//        if (!player.hasPermission(kit.getPermission())) {
+//          KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_No_permission"), kit);
+//          return;
+//        }
+//        selectKit(kit, player);
+//        clear();
+//        draw(player);
+//      }, Message.build(kit.getName()), Message.build(
+//          kit.getIcon().getItemMeta().getLore() == null ? Collections.singletonList("") : kit.getIcon().getItemMeta().getLore()
+//      ), this::addItem);
+//    }
+//  }
 
 }

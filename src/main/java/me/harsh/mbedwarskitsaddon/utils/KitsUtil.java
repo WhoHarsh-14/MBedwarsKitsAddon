@@ -1,10 +1,12 @@
 package me.harsh.mbedwarskitsaddon.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
+import me.harsh.mbedwarskitsaddon.kits.KitManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -38,6 +40,11 @@ public class KitsUtil {
         .replace("%kit_name%", kit.getName() == null ? "": kit.getName())
         .replace("%kit_id%", kit.getId())
     )));
+  }
+  public List<String> colorizeList(List<String> str){
+    final List<String> result = new ArrayList<>();
+    str.forEach(s -> result.add(colorize(s)));
+    return result;
   }
   public void tell(Player player, List<String> message, Kit kit){
     message.forEach(s -> tell(player, s, kit));
@@ -92,6 +99,18 @@ public class KitsUtil {
     return result.toString();
   }
 
+  public int getTotalPageNo() {
+    final int kitNo = KitManager.getInstance().getLoadedKits().size();
+    final int pageFloor = Math.floorDiv(kitNo, 35);
+    final double pageTemp = (kitNo / 35);
+    int pages = 0;
+    if (pageTemp == pageFloor) {
+      pages = pageFloor;
+    } else if (pageTemp > pageFloor) {
+      pages = pageFloor + 1;
+    }
+    return pages;
+  }
   public ArmourType getArmourType(ItemStack item){
     if (item.getType().name().endsWith("HELMET"))
       return ArmourType.HELMET;

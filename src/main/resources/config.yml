@@ -10,11 +10,30 @@ Features:
   Per_kit_perm: false
   # decreasing it significantly may cause troubles with other plugins (in seconds)
   Give_kit_delay: 5
-  Blocked_arenas: ["YouFavBlockedArena"]
+  # Enabling it alloys players to get kit on respawn.
+  Give_kit_on_respawn: false
+  Blocked_arenas: ["YourFavBlockedArena"]
 
 # Currently menu is limited to one page only.
 Menu:
-  Title: "&a&lK&c&lI&6&lT&7s"
+  # %page_total% : returns total number of pages
+  # %page_current% : returns current page
+  Title: "&a&lK&c&lI&6&lT&7s &7(%page_current%/%page_total%)"
+  Previous_page:
+    Name: "&cPrevious page"
+    Description:
+      - ""
+      - "&7Click to go back to previous page"
+  Next_page:
+    Name: "&aNext Page"
+    Description:
+      - ""
+      - "&7Click to go to the next page"
+  Player_head:
+    Name: "%player_name%'&7s info"
+    Description:
+      - ""
+      - "&eSelected kit: &a%mbw-kit_current%"
 # Messages
 Messages:
   # PLAYER PLACEHOLDERS WORKS
