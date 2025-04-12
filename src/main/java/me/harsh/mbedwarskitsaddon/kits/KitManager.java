@@ -1,6 +1,7 @@
 package me.harsh.mbedwarskitsaddon.kits;
 
 import de.marcely.bedwars.api.BedwarsAPI;
+import de.marcely.bedwars.api.player.PlayerDataAPI;
 import de.marcely.bedwars.tools.Helper;
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +16,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
+import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 @Getter
@@ -29,6 +32,31 @@ public class KitManager {
   private final String DIRECTORY = "plugins/MBedwars/add-ons/MBedwarsKitsAddon/kits.yml";
 
   private KitManager() {
+  }
+
+  public void setKit(Player player, Kit kit){
+    setKit(player.getUniqueId(), kit.getId());
+  }
+  public void setKit(UUID playerId, String kitId){
+    if (playerCurrentKits.containsKey(playerId))
+      playerCurrentKits.replace(playerId, kitId);
+    else
+      playerCurrentKits.put(playerId, kitId);
+
+    updateKit(playerId);
+  }
+  public void updateKit(Player player){
+    updateKit(player.getUniqueId());
+  }
+  public void updateKit(UUID playerUuid){
+    PlayerDataAPI.get().getProperties(playerUuid, playerProperties -> {
+      // Save current kit to props.
+      if (!playerCurrentKits.containsKey(playerUuid))
+        return;
+      final String key = playerCurrentKits.get(playerUuid);
+      playerProperties.set(KitsUtil.KIT_CURRENT_PATH, key);
+      playerCurrentKits.remove(playerUuid);
+    });
   }
 
   public void loadKits() {

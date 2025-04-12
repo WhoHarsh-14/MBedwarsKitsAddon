@@ -5,9 +5,7 @@ import de.marcely.bedwars.api.arena.Team;
 import de.marcely.bedwars.api.event.arena.RoundStartEvent;
 import de.marcely.bedwars.api.event.player.PlayerIngameRespawnEvent;
 import de.marcely.bedwars.api.player.PlayerDataAPI;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
@@ -16,9 +14,9 @@ import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -49,30 +47,17 @@ public class PlayerListener implements Listener {
     giveKitSafely(event.getPlayer(), arena, 1);
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void onJoin(PlayerJoinEvent event){
-    PlayerDataAPI.get().getProperties(event.getPlayer(), playerProperties -> {
-      // Load current kit into cache.
-      final String kitId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
-      if (KitManager.getInstance().getLoadedKits().containsKey(kitId))
-        KitManager.getInstance().getPlayerCurrentKits().put(event.getPlayer().getUniqueId(), kitId);
-      else KitManager.getInstance().getPlayerCurrentKits().put(event.getPlayer().getUniqueId(), "None");
-    });
+    Bukkit.getScheduler().runTaskLater(MBedwarsKitsPlugin.getInstance(), () -> {
+      PlayerDataAPI.get().getProperties(event.getPlayer().getUniqueId(), playerProperties -> {
+        // Load current kit into cache.
+        final String kitId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
+        KitManager.getInstance().setKit(event.getPlayer().getUniqueId(), kitId);
+      });
+    }, 20L* 5);
   }
 
-  // Player may have switched servers at this point.
-  @EventHandler
-  public void onLeave(PlayerQuitEvent event){
-    final Map<UUID,String> kitMap = KitManager.getInstance().getPlayerCurrentKits();
-    PlayerDataAPI.get().getProperties(event.getPlayer().getUniqueId(), playerProperties -> {
-      // Save current kit to props.
-      if (!kitMap.containsKey(event.getPlayer().getUniqueId()))
-        return;
-      final String key = kitMap.get(event.getPlayer().getUniqueId());
-      playerProperties.set(KitsUtil.KIT_CURRENT_PATH, key);
-      kitMap.remove(event.getPlayer().getUniqueId());
-    });
-  }
 
   public void giveKitSafely(Player player, Arena arena, int delay){
     if (!player.isOnline())

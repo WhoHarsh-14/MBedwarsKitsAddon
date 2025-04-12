@@ -39,67 +39,62 @@ public class KitMenu extends ChestGUI {
 
   // For every page
   // BLACK
-  // KITS (4 Rows = 35kits + 1None)
+  // KITS (4 Rows = 27kits + 1None)
   // BLACK (Info bar)
   public void drawPage(Player player, int pageNo) {
     if (pageNo > KitsUtil.getTotalPageNo())
       return;
 
-    for (int i = 0; i < 9; i++) {
+    final List<Integer> borders = Arrays.asList(0,1,2,3,4,5,6,7,8,9,17,18,26,27,35,36,44,46,47,48,50,51,52);
+    for (int i = 0; i < 54; i++) {
+      if (!borders.contains(i))
+        continue;
       setItem(getBlackFiller(player), i);
     }
-    for (int i = 45; i < 54; i++) {
-      switch (i) {
-        case 45:
-          // Back
-          createItem(player, "SIGN", "", () -> {
-                if (pageNo == 1)
-                  return;
-                drawPage(player, pageNo - 1);
-                setTitle(KitsUtil.colorize(
-                    KitConfig.KIT_MENU_TITLE
-                        .replace("%page_total%", ""+KitsUtil.getTotalPageNo())
-                        .replace("%page_current%", ""+ (pageNo-1))
-                ));
-              },
-              Message.build(KitsUtil.colorize(KitConfig.KIT_MENU_BACK_NAME)), Message.build(KitsUtil.colorizeList(KitConfig.KIT_MENU_BACK_DESCRIPTION)),
-              guiItem -> {
 
-                if (pageNo == 1)
-                  return;
-                setItem(guiItem, 45);
-              });
-          break;
-        case 53:
-          // Next
-          createItem(player, "SIGN", "", () -> {
-                if (pageNo == KitsUtil.getTotalPageNo())
-                  return;
-                drawPage(player, pageNo + 1);
-                setTitle(KitsUtil.colorize(
-                    KitConfig.KIT_MENU_TITLE
-                        .replace("%page_total%", ""+KitsUtil.getTotalPageNo())
-                        .replace("%page_current%", ""+ (pageNo+1))
-                ));
-              },
-              Message.build(KitsUtil.colorize(KitConfig.KIT_MENU_NEXT_NAME)), Message.build(KitsUtil.colorizeList(KitConfig.KIT_MENU_NEXT_DESCRIPTION)),
-              guiItem -> {
+    // BACK
+    createItem(player, "SIGN", "", () -> {
+          if (pageNo == 1)
+            return;
+          drawPage(player, pageNo - 1);
+          setTitle(KitsUtil.colorize(
+              KitConfig.KIT_MENU_TITLE
+                  .replace("%page_total%", ""+KitsUtil.getTotalPageNo())
+                  .replace("%page_current%", ""+ (pageNo-1))
+          ));
+        },
+        Message.build(KitsUtil.colorize(KitConfig.KIT_MENU_BACK_NAME)), Message.build(KitsUtil.colorizeList(KitConfig.KIT_MENU_BACK_DESCRIPTION)),
+        guiItem -> {
 
-                if (pageNo == KitsUtil.getTotalPageNo())
-                  return;
-                setItem(guiItem, 53);
+          if (pageNo == 1) {
+            setItem(getBlackFiller(player), 45);
+            return;
+          }
+          setItem(guiItem, 45);
+        });
+    // Next
+    createItem(player, "SIGN", "", () -> {
+          if (pageNo == KitsUtil.getTotalPageNo())
+            return;
+          drawPage(player, pageNo + 1);
+          setTitle(KitsUtil.colorize(
+              KitConfig.KIT_MENU_TITLE
+                  .replace("%page_total%", ""+KitsUtil.getTotalPageNo())
+                  .replace("%page_current%", ""+ (pageNo+1))
+          ));
+        },
+        Message.build(KitsUtil.colorize(KitConfig.KIT_MENU_NEXT_NAME)), Message.build(KitsUtil.colorizeList(KitConfig.KIT_MENU_NEXT_DESCRIPTION)),
+        guiItem -> {
 
-              });
-          break;
-        case 49:
-          // Head
-          setItem(getPlayerHead(player), i);
-          break;
-        default:
-          setItem(getBlackFiller(player), i);
+          if (pageNo == KitsUtil.getTotalPageNo()){
+            setItem(getBlackFiller(player), 53);
+            return;
+          }
+          setItem(guiItem, 53);
 
-      }
-    }
+        });
+    // HEAD
+    setItem(getPlayerHead(player), 49);
 
 
     createItem(player, "WHITE_STAINED_GLASS_PANE", "", () -> {
@@ -110,11 +105,15 @@ public class KitMenu extends ChestGUI {
       clear();
       drawPage(player, pageNo);
     }, Message.build("None"), Message.build(""), guiItem -> {
-      setItem(guiItem, 9);
+      setItem(guiItem, 10);
     });
 
     final Kit[] kits = KitManager.getInstance().getLoadedKits().values().toArray(new Kit[0]);
-    for (int i = 35 * (pageNo - 1); i < 35 * pageNo; i++) {
+    if (kits.length == 0)
+      return;
+    for (int i = 28 * (pageNo - 1); i < 28 * pageNo; i++) {
+      if (i >= kits.length)
+        break;
       final Kit kit = kits[i];
 
       if (kit == null)
@@ -180,7 +179,7 @@ public class KitMenu extends ChestGUI {
         customLore = new ArrayList<>();
       customLore.add("");
       customLore.add(KitsUtil.colorize("&aSelected"));
-      meta.setDisplayName(kit.getName());
+      meta.setDisplayName(KitsUtil.colorize(kit.getName()));
       meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
       meta.setLore(customLore);
       item.getItem().setItemMeta(meta);

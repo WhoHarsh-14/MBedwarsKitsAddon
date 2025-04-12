@@ -33,7 +33,7 @@ Menu:
     Name: "%player_name%'&7s info"
     Description:
       - ""
-      - "&eSelected kit: &a%mbw-kit_current%"
+      - "&eSelected kit: %mbw-kit_current%"
 # Messages
 Messages:
   # PLAYER PLACEHOLDERS WORKS

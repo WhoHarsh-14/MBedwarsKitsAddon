@@ -33,6 +33,7 @@ public final class MBedwarsKitsPlugin extends JavaPlugin {
       return;
 
     addon.registerCommands();
+    addon.registerEvents();
     GameAPI.get().registerLobbyItemHandler(new SpecialKitItem());
     saveDefaultConfig();
     new KitConfig(this).loadConfiguration();
