@@ -239,6 +239,7 @@ public class KitManager {
 
         final Kit kit = new Kit(kitId, name, icon, items, armour);
         addKit(kit);
+        updateKitInProps(kit);
       } catch (Exception e) {
 //        System.out.println("Failed to load kit: " + kitId + " Error: " + e.getMessage());
         e.printStackTrace();
