@@ -42,6 +42,8 @@ public class KitMenu extends ChestGUI {
   // KITS (4 Rows = 27kits + 1None)
   // BLACK (Info bar)
   public void drawPage(Player player, int pageNo) {
+    clear();
+
     if (pageNo > KitsUtil.getTotalPageNo())
       return;
 
@@ -109,15 +111,18 @@ public class KitMenu extends ChestGUI {
     });
 
     final Kit[] kits = KitManager.getInstance().getLoadedKits().values().toArray(new Kit[0]);
+
     if (kits.length == 0)
       return;
-    for (int i = 28 * (pageNo - 1); i < 28 * pageNo; i++) {
+    for (int i = 27 * (pageNo - 1); i < (27 * pageNo); i++) {
+      System.out.println(i);
       if (i >= kits.length)
         break;
-      final Kit kit = kits[i];
 
+      final Kit kit = kits[i];
       if (kit == null)
-        return;
+        continue;
+      System.out.println("Kit found:- " + kit.getId());
 
       createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
         if (!player.hasPermission(kit.getPermission())) {

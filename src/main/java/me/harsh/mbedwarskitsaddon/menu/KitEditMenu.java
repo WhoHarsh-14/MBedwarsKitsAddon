@@ -1,7 +1,6 @@
 package me.harsh.mbedwarskitsaddon.menu;
 
 import de.marcely.bedwars.api.message.Message;
-import de.marcely.bedwars.api.player.PlayerProperties;
 import de.marcely.bedwars.tools.Helper;
 import de.marcely.bedwars.tools.NMSHelper;
 import de.marcely.bedwars.tools.gui.GUIItem;
@@ -48,12 +47,12 @@ public class KitEditMenu extends ChestGUI implements Listener {
     // Load items
     kit.getItems().forEach((index, item) -> {
       final GUIItem guiItem = createItem(player, item.getType().name(), () -> {
-        // Remove from menu.
-        item.setType(Material.AIR);
+            // Remove from menu.
+            item.setType(Material.AIR);
 
-      }, Message.build(
-          item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(item)
-      ),
+          }, Message.build(
+              item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(item)
+          ),
           Message.build(KitsUtil.colorize("&cCLICK TO REMOVE")));
 
       guiItem.getItem().setItemMeta(item.getItemMeta());
@@ -61,8 +60,7 @@ public class KitEditMenu extends ChestGUI implements Listener {
 
       if (index == (-1)) {
         addItem(guiItem);
-      }
-      else setItem(guiItem, index);
+      } else setItem(guiItem, index);
     });
 
     // Load armours
@@ -70,7 +68,7 @@ public class KitEditMenu extends ChestGUI implements Listener {
       final GUIItem guiItem = createItem(player, armour.getType().name(), () -> {
         final ArmourType type = KitsUtil.getArmourType(armour);
         final int index = KitsUtil.getIndexFromType(armour);
-        switch (type){
+        switch (type) {
           case HELMET:
             setItem(getArmourHelmet(player), index);
           case CHESTPLATE:
@@ -112,13 +110,13 @@ public class KitEditMenu extends ChestGUI implements Listener {
       }
 
       // Fix the mess
-      if (getItem(18) != null && !(getItem(18).equals(getArmourHelmet(player))))
+      if (getItem(18) != null && !(getItem(18).getItem().isSimilar(getArmourHelmet(player).getItem())))
         kit.getArmour().add(getItem(18).getItem());
-      if (getItem(27) != null && !(getItem(27).equals(getArmourChestplate(player))))
+      if (getItem(27) != null && !(getItem(27).getItem().isSimilar(getArmourChestplate(player).getItem())))
         kit.getArmour().add(getItem(27).getItem());
-      if (getItem(36) != null && !(getItem(36).equals(getArmourLeggings(player))))
+      if (getItem(36) != null && !(getItem(36).getItem().isSimilar(getArmourLeggings(player).getItem())))
         kit.getArmour().add(getItem(36).getItem());
-      if (getItem(45) != null && !(getItem(45).equals(getArmourHelmet(player))))
+      if (getItem(45) != null && !(getItem(45).getItem().isSimilar(getArmourHelmet(player).getItem())))
         kit.getArmour().add(getItem(45).getItem());
 
       KitManager.getInstance().addKit(kit);
@@ -142,7 +140,7 @@ public class KitEditMenu extends ChestGUI implements Listener {
     if (getPlayers().contains(player)) {
       // Player is in our AddKitMenu
       final ItemStack item = event.getCursor();
-      if (item == null || item.getType() == Material.AIR){
+      if (item == null || item.getType() == Material.AIR) {
         // Player has clicked on an item.
         final ItemStack itemStack = event.getClickedInventory().getItem(event.getSlot());
         inventory.remove(itemStack);
@@ -155,10 +153,10 @@ public class KitEditMenu extends ChestGUI implements Listener {
       final GUIItem guiItem = createItem(player, item.getType().name(), () -> {
           },
           Message.build(
-              item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName(): KitsUtil.getFormattedMaterialName(item)
+              item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(item)
           ),
           Message.build(
-              item.getItemMeta().getLore() == null ? Collections.emptyList(): item.getItemMeta().getLore()
+              item.getItemMeta().getLore() == null ? Collections.emptyList() : item.getItemMeta().getLore()
           ));
 
       // Copies over the Enchants and everything....
@@ -232,17 +230,17 @@ public class KitEditMenu extends ChestGUI implements Listener {
       return;
     kit.addArmour(armourPiece);
     setItem(createItem(player, armourPiece.getType().name(), () -> {
-        }
-        , Message.build(armourPiece.getItemMeta().hasDisplayName() ? armourPiece.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(armourPiece)),
-        Message.build(armourPiece.getItemMeta().getLore()==null ? Collections.emptyList() : armourPiece.getItemMeta().getLore()))
-    , getArmourIndex(armourPiece));
+            }
+            , Message.build(armourPiece.getItemMeta().hasDisplayName() ? armourPiece.getItemMeta().getDisplayName() : KitsUtil.getFormattedMaterialName(armourPiece)),
+            Message.build(armourPiece.getItemMeta().getLore() == null ? Collections.emptyList() : armourPiece.getItemMeta().getLore()))
+        , getArmourIndex(armourPiece));
   }
 
-  private int getArmourIndex(ItemStack armour){
+  private int getArmourIndex(ItemStack armour) {
     if (!KitsUtil.isArmour(armour))
       return -1;
     final ArmourType type = KitsUtil.getArmourType(armour);
-    switch (type){
+    switch (type) {
       case HELMET:
         return 18;
       case CHESTPLATE:

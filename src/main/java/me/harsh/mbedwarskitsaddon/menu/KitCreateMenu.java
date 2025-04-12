@@ -77,13 +77,13 @@ public class KitCreateMenu extends ChestGUI implements Listener {
       }
 
       // Fix the mess
-      if (getItem(18) != null && !(getItem(18).equals(getArmourHelmet(player))))
+      if (getItem(18) != null && !(getItem(18).getItem().isSimilar(getArmourHelmet(player).getItem())))
         kit.getArmour().add(getItem(18).getItem());
-      if (getItem(27) != null && !(getItem(27).equals(getArmourChestplate(player))))
+      if (getItem(27) != null && !(getItem(27).getItem().isSimilar(getArmourChestplate(player).getItem())))
         kit.getArmour().add(getItem(27).getItem());
-      if (getItem(36) != null && !(getItem(36).equals(getArmourLeggings(player))))
+      if (getItem(36) != null && !(getItem(36).getItem().isSimilar(getArmourLeggings(player).getItem())))
         kit.getArmour().add(getItem(36).getItem());
-      if (getItem(45) != null && !(getItem(45).equals(getArmourHelmet(player))))
+      if (getItem(45) != null && !(getItem(45).getItem().isSimilar(getArmourHelmet(player).getItem())))
         kit.getArmour().add(getItem(45).getItem());
 
       KitManager.getInstance().addKit(kit);

@@ -100,9 +100,11 @@ public class KitsUtil {
   }
 
   public int getTotalPageNo() {
+    System.out.println("Kits :- " + KitManager.getInstance().getLoadedKits().keySet());
     final int kitNo = KitManager.getInstance().getLoadedKits().size();
     final int pageFloor = Math.floorDiv(kitNo, 27);
-    final double pageTemp = (kitNo / 27);
+    final double pageTemp = (kitNo / 27.0);
+
     int pages = 1;
     if (pageTemp == pageFloor && (pageTemp != 0 || pageFloor != 0)) {
       pages = pageFloor;

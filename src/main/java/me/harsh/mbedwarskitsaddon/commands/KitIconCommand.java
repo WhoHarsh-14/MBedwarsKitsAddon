@@ -1,6 +1,7 @@
 package me.harsh.mbedwarskitsaddon.commands;
 
 import de.marcely.bedwars.tools.Helper;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,16 +45,13 @@ public class KitIconCommand extends SubCommand {
             .append(" ");
       }
       final String newString = builder.toString();
-      final List<String> lore = Arrays.stream(newString
-                  .split(","))
-                  .collect(Collectors.toList());
       final ItemStack icon = kit.getIcon();
       final ItemMeta meta = icon.getItemMeta();
-      for (int i = 1; i < args.length; i++) {
-        lore.add(KitsUtil.colorize(args[i]));
-      }
+      final List<String> lore = Arrays.stream(newString.split(",")).collect(Collectors.toList());
       meta.setLore(lore);
       icon.setItemMeta(meta);
+
+      KitManager.getInstance().updateKitInProps(kit);
     }
 
     if (args[1].equalsIgnoreCase("item")) {

@@ -18,7 +18,7 @@ Features:
 Menu:
   # %page_total% : returns total number of pages
   # %page_current% : returns current page
-  Title: "&a&lK&c&lI&6&lT&7s &7(%page_current%/%page_total%)"
+  Title: "&9&lKITs &5(%page_current%/%page_total%)"
   Previous_page:
     Name: "&cPrevious page"
     Description:

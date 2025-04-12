@@ -55,7 +55,7 @@ public class PlayerListener implements Listener {
         final String kitId = playerProperties.get(KitsUtil.KIT_CURRENT_PATH).orElse("None");
         KitManager.getInstance().setKit(event.getPlayer().getUniqueId(), kitId);
       });
-    }, 20L* 5);
+    }, 20L);
   }
 
 

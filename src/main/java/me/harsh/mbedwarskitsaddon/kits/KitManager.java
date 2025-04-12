@@ -51,14 +51,34 @@ public class KitManager {
   public void updateKit(UUID playerUuid){
     PlayerDataAPI.get().getProperties(playerUuid, playerProperties -> {
       // Save current kit to props.
-      if (!playerCurrentKits.containsKey(playerUuid))
-        return;
       final String key = playerCurrentKits.get(playerUuid);
       playerProperties.set(KitsUtil.KIT_CURRENT_PATH, key);
-      playerCurrentKits.remove(playerUuid);
     });
   }
 
+  public void updateKitInProps(Kit value){
+    getLoadedKits().replace(value.getId(), value);
+    PlayerDataAPI.get().getProperties(new UUID(0, 0), playerProperties -> {
+      final String path = "kits_" + value.getId().toLowerCase().replace(" ", "_") + "_";
+
+      playerProperties.set(path + "name", value.getName());
+      playerProperties.set(path + "icon", Helper.get().composeItemStack(value.getIcon()));
+
+      value.getItems().forEach((integer, itemStack) -> {
+        playerProperties.set(path + "items_" +
+                (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName().toLowerCase().replace(" ", "_") : itemStack.getType().name().toLowerCase().replace(" ", "_"))
+            , Helper.get().composeItemStack(itemStack));
+        playerProperties.set(path + "items_" +
+            (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName().toLowerCase().replace(" ", "_") : itemStack.getType().name().toLowerCase().replace(" ", "_"))
+            + "_index", integer);
+      });
+
+      value.getArmour().forEach(itemStack -> playerProperties.set(path + "armour_" +
+              (itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName().toLowerCase().replace(" ", "_") : itemStack.getType().name().toLowerCase().replace(" ", "_"))
+          , Helper.get().composeItemStack(itemStack)));
+
+    });
+  }
   public void loadKits() {
     // Load kits from our Dummy Player Props
     BedwarsAPI.getPlayerDataAPI().getProperties(new UUID(0, 0), playerProperties -> {
