@@ -26,14 +26,19 @@ public class KitPlaceholders extends PlaceholderExpansion {
 
   @Override
   public @Nullable String onPlaceholderRequest(Player player, @NotNull String params) {
+    final Kit kit = KitManager.getInstance().getLoadedKits().get(KitManager.getInstance().getPlayerCurrentKits().get(player.getUniqueId()));
     switch (params) {
       case "current":
-        final Kit kit = KitManager.getInstance().getLoadedKits().get(KitManager.getInstance().getPlayerCurrentKits().get(player.getUniqueId()));
         if (kit == null)
           return "None";
         return KitsUtil.colorize(kit.getName());
+
+      case "coins":
+        if (kit == null || kit.getPrice() == -1)
+          return "";
+        return ""+kit.getPrice();
     }
 
-    return "";
+    return "Invalid use of kit placeholder.";
   }
 }

@@ -62,6 +62,9 @@ public class KitManager {
       final String path = "kits_" + value.getId().toLowerCase().replace(" ", "_") + "_";
 
       playerProperties.set(path + "name", value.getName());
+      if (KitsUtil.KIT_COINS_HOOK)
+        playerProperties.set(path + "coins", value.getPrice());
+      else playerProperties.set(path + "coins", -1);
       playerProperties.set(path + "icon", Helper.get().composeItemStack(value.getIcon()));
 
       value.getItems().forEach((integer, itemStack) -> {
@@ -79,6 +82,17 @@ public class KitManager {
 
     });
   }
+  public void saveCoins(){
+    PlayerDataAPI.get().getProperties(new UUID(0,0), playerProperties -> {
+      for (String kitId : KitConfig.KIT_PER_COINS.keySet()) {
+        final Kit kit = getLoadedKits().get(kitId);
+        getLoadedKits().remove(kitId);
+        kit.setPrice(KitConfig.KIT_PER_COINS.get(kitId));
+        getLoadedKits().put(kitId, kit);
+        playerProperties.set("kits_" + kitId + "_coins", kit.getPrice());
+      }
+    });
+  }
   public void loadKits() {
     // Load kits from our Dummy Player Props
     BedwarsAPI.getPlayerDataAPI().getProperties(new UUID(0, 0), playerProperties -> {
@@ -93,6 +107,9 @@ public class KitManager {
         final String id = key.split("_")[1];
         final String name = playerProperties.get(key).orElse("[Error parsing name]");
         final ItemStack icon = Helper.get().parseItemStack(playerProperties.get("kits_" + id + "_icon").orElse(""));
+        int coins = -1;
+        if (KitsUtil.KIT_COINS_HOOK)
+          coins = playerProperties.getInt("kits_" + id + "_coins").orElse(KitConfig.KIT_DEFAULT_COINS);
 
         if (loadedKits.containsKey(id))
           continue;
@@ -131,7 +148,7 @@ public class KitManager {
           }
         }
 
-        loadedKits.put(id, new Kit(id, name, icon, itemStacks, armours));
+        loadedKits.put(id, new Kit(id, name, icon, itemStacks, armours, coins));
       }
     });
   }
@@ -161,6 +178,9 @@ public class KitManager {
         // Saves the new kit.
         playerProperties.set(path + "name", value.getName());
         playerProperties.set(path + "icon", Helper.get().composeItemStack(value.getIcon()));
+        if (KitsUtil.KIT_COINS_HOOK)
+          playerProperties.set(path + "coins", value.getPrice());
+        else playerProperties.set(path + "coins", -1);
 
         value.getItems().forEach((integer, itemStack) -> {
           playerProperties.set(path + "items_" +
@@ -194,6 +214,7 @@ public class KitManager {
         if (kitSection == null) continue;
 
         final String name = kitSection.getString("Name");
+        final int coins = kitSection.getInt("Coins");
         final String iconData = kitSection.getString("Icon");
         final ItemStack icon = Helper.get().parseItemStack(iconData);
 
@@ -237,7 +258,7 @@ public class KitManager {
           }
         }
 
-        final Kit kit = new Kit(kitId, name, icon, items, armour);
+        final Kit kit = new Kit(kitId, name, icon, items, armour, coins);
         addKit(kit);
         updateKitInProps(kit);
       } catch (Exception e) {
@@ -258,6 +279,7 @@ public class KitManager {
       final String basePath = "Kits." + kit.getId() + ".";
 
       config.set(basePath + "Name", kit.getName());
+      config.set(basePath + "Coins", kit.getPrice());
       config.set(basePath + "Icon", Helper.get().composeItemStack(kit.getIcon()));
 
       final List<Map<Integer, String>> indexItemMapList = new ArrayList<>();
@@ -309,6 +331,7 @@ public class KitManager {
     this.getLoadedKits().remove(kit.getId());
     BedwarsAPI.getPlayerDataAPI().getProperties(new UUID(0, 0), playerProperties -> {
       playerProperties.remove(path + "name");
+      playerProperties.remove(path + "coins");
       playerProperties.remove(path + "icon");
       kit.getItems().forEach((integer, itemStack) -> {
         playerProperties.remove(path + "items_" +

@@ -59,9 +59,19 @@ public final class MBedwarsKitsPlugin extends JavaPlugin {
       if (!KitConfig.ENABLED)
         addon.unregister();
 
+      if (KitsUtil.KIT_COINS_HOOK){
+        // Saving after 3 seconds for better performance and no bugs.
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+          // Save data to player data api.
+          KitManager.getInstance().saveCoins();
+        }, 60);
+      }
 
       if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) { //
         new KitPlaceholders().register();
+      }
+      if (Bukkit.getPluginManager().isPluginEnabled("MBedwars-Cosmetics")){
+        KitsUtil.KIT_COINS_HOOK = true;
       }
 
     });

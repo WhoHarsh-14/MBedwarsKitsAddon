@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
+import me.harsh.mbedwarskitsaddon.kits.KitManager;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -25,6 +26,10 @@ public class KitConfig {
   public static int GIVE_KIT_DELAY;
   public static boolean GIVE_KIT_ON_RESPAWN;
   public static List<String> BLOCKED_ARENAS;
+
+  // COINS HOOK
+  public static int KIT_DEFAULT_COINS = 0;
+  public static Map<String,Integer> KIT_PER_COINS = new HashMap<>();
 
   // MENU
   public static String KIT_MENU_TITLE;
@@ -56,6 +61,21 @@ public class KitConfig {
       GIVE_KIT_ON_RESPAWN = features.getBoolean("Give_kit_on_respawn");
       BLOCKED_ARENAS = features.getStringList("Blocked_arenas");
     }
+
+    //             COINS HOOK
+    if (GAME_SERVER){
+      final ConfigurationSection coins = config.getConfigurationSection("Kits");
+      if (coins != null){
+        KIT_DEFAULT_COINS = coins.getInt("Default");
+        for (String key : coins.getKeys(false)) {
+          if (KitManager.getInstance().getLoadedKits().containsKey(key)){
+            // Key = Kit
+            KIT_PER_COINS.put(key, config.getInt(key));
+          }
+        }
+      }
+    }
+
 
     //                MENU
     final ConfigurationSection menu = config.getConfigurationSection("Menu");

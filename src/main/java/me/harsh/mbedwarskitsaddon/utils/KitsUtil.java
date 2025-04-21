@@ -16,6 +16,7 @@ public class KitsUtil {
 
   public String KIT_CURRENT_PATH = "kits_selected";
   public String KIT_ADMIN_PERM = "kitsaddon.admin";
+  public boolean KIT_COINS_HOOK = false;
 
   public void log(String message, boolean warn){
     if (warn)

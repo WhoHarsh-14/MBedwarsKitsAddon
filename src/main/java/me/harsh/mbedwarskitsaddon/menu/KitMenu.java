@@ -115,14 +115,12 @@ public class KitMenu extends ChestGUI {
     if (kits.length == 0)
       return;
     for (int i = 27 * (pageNo - 1); i < (27 * pageNo); i++) {
-      System.out.println(i);
       if (i >= kits.length)
         break;
 
       final Kit kit = kits[i];
       if (kit == null)
         continue;
-      System.out.println("Kit found:- " + kit.getId());
 
       createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
         if (!player.hasPermission(kit.getPermission())) {
@@ -134,7 +132,16 @@ public class KitMenu extends ChestGUI {
         drawPage(player, pageNo);
       }, Message.build(kit.getName()), Message.build(
           kit.getIcon().getItemMeta().getLore() == null ? Collections.singletonList("") : kit.getIcon().getItemMeta().getLore()
-      ), this::addItem);
+      ), guiItem -> {
+        if (!player.hasPermission(kit.getPermission()) && KitsUtil.KIT_COINS_HOOK) {
+          final ItemMeta meta = guiItem.getItem().getItemMeta();
+          final List<String> lore = meta.getLore();
+          lore.add("");
+          lore.add("&6Price: " + kit.getPrice());
+          guiItem.getItem().setItemMeta(meta);
+        }
+        addItem(guiItem);
+      });
 
     }
   }
@@ -150,6 +157,7 @@ public class KitMenu extends ChestGUI {
     loreList.addAll(Arrays.stream(lore.done(player).split("\\\\n"))
         .map(l -> ChatColor.GRAY + l)
         .collect(Collectors.toList()));
+
 
     im.setDisplayName(KitsUtil.colorize(name.done(player, false)));
     im.setLore(loreList);

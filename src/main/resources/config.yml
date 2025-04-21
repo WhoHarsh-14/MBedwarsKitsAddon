@@ -14,6 +14,18 @@ Features:
   Give_kit_on_respawn: false
   Blocked_arenas: ["YourFavBlockedArena"]
 
+
+# !------ COSMETICS AND COINS HOOK ------!
+Kits:
+
+  # (Will be used in every server)
+  # If a kit's coins is not mentioned default will be used.
+  Default: 500
+
+  # (Only used if it's not the Game Server)
+  # KitName: CoinsValue <-- follow this format.
+  RandomKit: 1000
+
 # Currently menu is limited to one page only.
 Menu:
   # %page_total% : returns total number of pages
