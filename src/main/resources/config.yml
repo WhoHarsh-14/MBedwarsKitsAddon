@@ -12,6 +12,9 @@ Features:
   Give_kit_delay: 5
   # Enabling it alloys players to get kit on respawn.
   Give_kit_on_respawn: false
+  # If hooking with cosmetics and coins addon, having multiple currencies can cause
+  # Issue which is why provide the id for the currency to use in that case.
+  Coins_id: "CurrencyIdHere"
   Blocked_arenas: ["YourFavBlockedArena"]
 
 
@@ -61,6 +64,10 @@ Messages:
   Kit_given: ["&aYou got %kit_name% kit!"]
   Kit_saved: ["&aYou have saved all the loaded kits into &6kits.yml!"]
   Kit_loaded: ["&aYou have loaded all the kits from &6kits.yml!"]
+  # Only valid with cosmetics coins hook.
+  Kit_purchased: ["&a&lCONGO! &7You bought %kit_name% for &6%kit_price%coins &7."]
+  Kit_coins_not_enough: ["&c&lSORRY! &7You cannot buy %kit_name% as you don't have &6%kit_price%coins &7."]
+
   Command_invalid: ["&c&lINVALID &ccommand usage!"]
   Command_invalid_material: ["&c&lINVALID &cPlease use existing material name."]
   # Returns on /kit

@@ -1,10 +1,14 @@
 package me.harsh.mbedwarskitsaddon.menu;
 
+import de.marcely.bedwars.api.cosmetics.CosmeticsAPI;
+import de.marcely.bedwars.api.cosmetics.currency.Currency;
+import de.marcely.bedwars.api.cosmetics.currency.CurrencyProvider;
 import de.marcely.bedwars.api.message.Message;
 import de.marcely.bedwars.tools.Helper;
 import de.marcely.bedwars.tools.NMSHelper;
 import de.marcely.bedwars.tools.gui.GUIItem;
 import de.marcely.bedwars.tools.gui.type.ChestGUI;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,6 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.config.KitConfig;
 import me.harsh.mbedwarskitsaddon.kits.Kit;
 import me.harsh.mbedwarskitsaddon.kits.KitManager;
@@ -124,6 +129,30 @@ public class KitMenu extends ChestGUI {
 
       createItem(player, kit.getIcon().getType().name(), KitsUtil.getKitPerm(kit), () -> {
         if (!player.hasPermission(kit.getPermission())) {
+          if (KitsUtil.KIT_COINS_HOOK){
+            Currency currency = CosmeticsAPI.get().getCurrencyById(KitConfig.COINS_ID);
+            if (currency == null && !(CosmeticsAPI.get().getCurrencies().isEmpty())){
+              // If not empty it should find any.
+              currency = CosmeticsAPI.get().getCurrencies().stream().findAny().get();
+            }
+            if (currency.getProvider() == null)
+              return;
+
+            final CurrencyProvider provider = currency.getProvider();
+            currency.getProvider().getAmount(player, bigDecimal -> {
+              if (bigDecimal.compareTo(BigDecimal.valueOf(kit.getPrice())) >= 0){
+                // Player has enough coins.
+                provider.setAmount(player, bigDecimal.subtract(BigDecimal.valueOf(kit.getPrice())));
+                player.addAttachment(MBedwarsKitsPlugin.getInstance()).setPermission(kit.getPermission(), true);
+                KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_purchased"), kit);
+                clear();
+                drawPage(player, pageNo);
+                return;
+              }
+              KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_coins_not_enough"), kit);
+            });
+            return;
+          }
           KitsUtil.tell(player, KitConfig.getMessagesMap().get("Kit_No_permission"), kit);
           return;
         }

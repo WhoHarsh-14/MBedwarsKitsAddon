@@ -26,6 +26,7 @@ public class KitConfig {
   public static int GIVE_KIT_DELAY;
   public static boolean GIVE_KIT_ON_RESPAWN;
   public static List<String> BLOCKED_ARENAS;
+  public static String COINS_ID;
 
   // COINS HOOK
   public static int KIT_DEFAULT_COINS = 0;
@@ -60,6 +61,7 @@ public class KitConfig {
       GIVE_KIT_DELAY = features.getInt("Give_kit_delay");
       GIVE_KIT_ON_RESPAWN = features.getBoolean("Give_kit_on_respawn");
       BLOCKED_ARENAS = features.getStringList("Blocked_arenas");
+      COINS_ID = features.getString("Coins_id");
     }
 
     //             COINS HOOK
