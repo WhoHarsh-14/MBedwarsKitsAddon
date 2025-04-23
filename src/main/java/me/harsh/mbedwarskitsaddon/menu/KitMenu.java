@@ -135,7 +135,7 @@ public class KitMenu extends ChestGUI {
               // If not empty it should find any.
               currency = CosmeticsAPI.get().getCurrencies().stream().findAny().get();
             }
-            if (currency.getProvider() == null)
+            if (currency == null || currency.getProvider() == null)
               return;
 
             final CurrencyProvider provider = currency.getProvider();
@@ -169,6 +169,7 @@ public class KitMenu extends ChestGUI {
           lore.add("&6Price: " + kit.getPrice());
           guiItem.getItem().setItemMeta(meta);
         }
+        System.out.println("Adding GUi Item");
         addItem(guiItem);
       });
 

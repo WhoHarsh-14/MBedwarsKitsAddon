@@ -22,6 +22,8 @@ public final class MBedwarsKitsPlugin extends JavaPlugin {
   private static MBedwarsKitsPlugin instance;
   @Getter
   private static MBedwarsKitsAddon addon;
+  @Getter
+  private KitConfig kitConfig;
 
   @Override
   public void onEnable() {
@@ -36,7 +38,8 @@ public final class MBedwarsKitsPlugin extends JavaPlugin {
     addon.registerEvents();
     GameAPI.get().registerLobbyItemHandler(new SpecialKitItem());
     saveDefaultConfig();
-    new KitConfig(this).loadConfiguration();
+    kitConfig = new KitConfig(this);
+    kitConfig.loadConfiguration();
     KitManager.getInstance().loadKits();
 
     final PluginDescriptionFile pdf = this.getDescription();
