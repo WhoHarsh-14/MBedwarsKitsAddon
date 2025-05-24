@@ -38,8 +38,8 @@ public class KitsUtil {
   }
   public void tell(Player player, String message, Kit kit){
     player.sendMessage(colorize(PlaceholderAPI.setPlaceholders(player, message
-        .replace("%kit_name%", kit.getName() == null ? "": kit.getName())
-        .replace("%kit_id%", kit.getId())
+        .replace("{kit_name}", kit.getName() == null ? "": kit.getName())
+        .replace("{kit_id}", kit.getId())
     )));
   }
   public List<String> colorizeList(List<String> str){

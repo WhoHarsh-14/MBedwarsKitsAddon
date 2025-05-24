@@ -165,11 +165,12 @@ public class KitMenu extends ChestGUI {
         if (!player.hasPermission(kit.getPermission()) && KitsUtil.KIT_COINS_HOOK) {
           final ItemMeta meta = guiItem.getItem().getItemMeta();
           final List<String> lore = meta.getLore();
-          lore.add("");
-          lore.add("&6Price: " + kit.getPrice());
+          for (String kitAdditionalLore : KitConfig.getMessagesMap().get("Kit_additional_lore")) {
+            lore.add(KitsUtil.colorize(kitAdditionalLore.replace("{price}", ""+kit.getPrice())));
+          }
+          meta.setLore(lore);
           guiItem.getItem().setItemMeta(meta);
         }
-        System.out.println("Adding GUi Item");
         addItem(guiItem);
       });
 

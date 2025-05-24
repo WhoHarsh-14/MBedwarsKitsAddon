@@ -85,11 +85,13 @@ public class KitManager {
   public void saveCoins(){
     PlayerDataAPI.get().getProperties(new UUID(0,0), playerProperties -> {
       for (String kitId : KitConfig.KIT_PER_COINS.keySet()) {
+        System.out.println("Coins hook using!");
+        System.out.println("Kit id: " + kitId);
         final Kit kit = getLoadedKits().get(kitId);
         getLoadedKits().remove(kitId);
         kit.setPrice(KitConfig.KIT_PER_COINS.get(kitId));
-        getLoadedKits().put(kitId, kit);
         playerProperties.set("kits_" + kitId + "_coins", kit.getPrice());
+        getLoadedKits().put(kitId, kit);
       }
     });
   }

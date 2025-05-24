@@ -6,6 +6,7 @@ import java.util.Map;
 import lombok.Getter;
 import me.harsh.mbedwarskitsaddon.MBedwarsKitsPlugin;
 import me.harsh.mbedwarskitsaddon.kits.KitManager;
+import me.harsh.mbedwarskitsaddon.utils.KitsUtil;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -65,11 +66,12 @@ public class KitConfig {
     }
 
     //             COINS HOOK
-    if (GAME_SERVER){
+    if (!GAME_SERVER){
       final ConfigurationSection coins = config.getConfigurationSection("Kits");
       if (coins != null){
         KIT_DEFAULT_COINS = coins.getInt("Default");
         for (String key : coins.getKeys(false)) {
+          System.out.println("Kit: " + key);
           if (KitManager.getInstance().getLoadedKits().containsKey(key)){
             // Key = Kit
             KIT_PER_COINS.put(key, config.getInt(key));

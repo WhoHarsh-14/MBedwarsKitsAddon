@@ -1,5 +1,6 @@
 package me.harsh.mbedwarskitsaddon;
 
+import de.marcely.bedwars.api.AddonAPI;
 import de.marcely.bedwars.api.BedwarsAPI;
 import de.marcely.bedwars.api.GameAPI;
 import java.util.Arrays;
@@ -40,7 +41,7 @@ public final class MBedwarsKitsPlugin extends JavaPlugin {
     saveDefaultConfig();
     kitConfig = new KitConfig(this);
     kitConfig.loadConfiguration();
-    KitManager.getInstance().loadKits();
+
 
     final PluginDescriptionFile pdf = this.getDescription();
 
@@ -57,27 +58,22 @@ public final class MBedwarsKitsPlugin extends JavaPlugin {
   }
 
   public void loadKitsAddon() {
-    BedwarsAPI.onReady(() -> {
+    if (!KitConfig.ENABLED)
+      addon.unregister();
 
-      if (!KitConfig.ENABLED)
-        addon.unregister();
-
-      if (KitsUtil.KIT_COINS_HOOK){
-        // Saving after 3 seconds for better performance and no bugs.
-        Bukkit.getScheduler().runTaskLater(this, () -> {
-          // Save data to player data api.
-          KitManager.getInstance().saveCoins();
-        }, 60);
+    this.getServer().getScheduler().runTaskLater(this, () -> {
+      KitManager.getInstance().loadKits();
+      if (AddonAPI.get().getByName("Cosmetics") != null && AddonAPI.get().getByName("Cosmetics").isRegistered()){
+        KitsUtil.KIT_COINS_HOOK = true;
+        KitsUtil.log(" Coins found! Hooking....", false);
+        Bukkit.getScheduler().runTaskLater(this, () -> {KitManager.getInstance().saveCoins();}, 20);
       }
 
-      if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) { //
+      if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
         new KitPlaceholders().register();
       }
-      if (Bukkit.getPluginManager().isPluginEnabled("MBedwars-Cosmetics")){
-        KitsUtil.KIT_COINS_HOOK = true;
-      }
+    }, 40);
 
-    });
   }
 
 

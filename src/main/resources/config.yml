@@ -52,21 +52,25 @@ Menu:
 # Messages
 Messages:
   # PLAYER PLACEHOLDERS WORKS
-  # %kit_name% => returns the kit (if available), %kit_id% => returns kit's id
+  # {kit_name} => returns the kit (if available), {kit_id} => returns kit's id
   Kit_No_permission: ["&c&lSorry %player_name%! &7you haven't unlocked the kit yet."]
-  Kit_already_selected: ["&c&lSorry %player_name%! &7you have already selected %kit_name%."]
-  Kit_already_exists: ["&c&lSorry %player_name%! &7%kit_name% kit already exists with that id."]
-  Kit_does_not_exists: ["&c&lSorry %player_name%! &7%kit_name% does not exists with that id."]
-  Kit_created: ["&a&lYAY! &7%kit_name% with the id %kit_id% has been created!!."]
-  Kit_removed: ["&a&lYAY! &7%kit_name% with the id %kit_id% has been removed."]
-  Kit_selected: ["&a&lYay %player_name%! &7You have now selected %kit_name% kit."]
-  Kit_icon_edited: ["&a&lYay %player_name%! &7You have updated the &6%kit_name%."]
-  Kit_given: ["&aYou got %kit_name% kit!"]
+  Kit_already_selected: ["&c&lSorry %player_name%! &7you have already selected {kit_name}."]
+  Kit_already_exists: ["&c&lSorry %player_name%! &7{kit_name} kit already exists with that id."]
+  Kit_does_not_exists: ["&c&lSorry %player_name%! &7{kit_name} does not exists with that id."]
+  Kit_created: ["&a&lYAY! &7{kit_name} with the id {kit_id} has been created!!."]
+  Kit_removed: ["&a&lYAY! &7{kit_name} with the id {kit_id} has been removed."]
+  Kit_selected: ["&a&lYay %player_name%! &7You have now selected {kit_name} kit."]
+  Kit_icon_edited: ["&a&lYay %player_name%! &7You have updated the &6{kit_name}."]
+  Kit_given: ["&aYou got {kit_name} kit!"]
   Kit_saved: ["&aYou have saved all the loaded kits into &6kits.yml!"]
   Kit_loaded: ["&aYou have loaded all the kits from &6kits.yml!"]
+
   # Only valid with cosmetics coins hook.
-  Kit_purchased: ["&a&lCONGO! &7You bought %kit_name% for &6%kit_price%coins &7."]
-  Kit_coins_not_enough: ["&c&lSORRY! &7You cannot buy %kit_name% as you don't have &6%kit_price%coins &7."]
+  Kit_purchased: ["&a&lCONGO! &7You bought {kit_name} for &6%kit_price%coins &7."]
+  Kit_coins_not_enough: ["&c&lSORRY! &7You cannot buy {kit_name} as you don't have &6%kit_price%coins &7."]
+  Kit_additional_lore:
+    - ""
+    - "&6Price: {price}"
 
   Command_invalid: ["&c&lINVALID &ccommand usage!"]
   Command_invalid_material: ["&c&lINVALID &cPlease use existing material name."]
